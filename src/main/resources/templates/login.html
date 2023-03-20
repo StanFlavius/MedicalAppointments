@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor details</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.1.3/css/bootstrap.min.css"/>
+    <script src="/webjars/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div class="container col-md-4 col-md-offset-4" style="margin-top: 20px">
+    <div class="mt-5 mb-5 text-center">
+        <h2>Please log in!</h2>
+        <h4 style="display:inline">
+            Or create an account by clicking
+            <a th:href="@{'/register'}" style="text-decoration:none;color:black;">
+                <strong>here
+                </strong>
+            </a>
+        </h4>
+    </div>
+    <form class="form-group align-content-lg-start p-3" method="post" th:action="authUser">
+        <p th:if="${param.error}" class="text-danger">Invalid user or password</p>
+
+        <div class="row md-3">
+            <label for="username">Username</label>
+            <input class="form-control" type="text" id="username" name="username" placeholder="Username" required
+                   autofocus>
+        </div>
+        <div class="row md-3">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+        </div>
+
+
+        <div class="row md-6">
+            <div class="col text-center">
+                <button class="btn btn-primary mt-3" type="submit">Sign in</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
