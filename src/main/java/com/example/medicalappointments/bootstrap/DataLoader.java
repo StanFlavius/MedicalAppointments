@@ -1,8 +1,8 @@
 package com.example.medicalappointments.bootstrap;
 
-import com.example.medicalappointments.model.User;
+import com.example.medicalappointments.model.*;
 import com.example.medicalappointments.model.security.Role;
-import com.example.medicalappointments.repository.UserRepository;
+import com.example.medicalappointments.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -22,7 +22,12 @@ public class DataLoader implements CommandLineRunner {
 
     private final EntityManager entityManager;
     private final UserRepository userRepository;
+    private final DoctorRepository doctorRepository;
+    private final PatientRepository patientRepository;
+    private final DepartmentRepository departmentRepository;
+    private final MedicationRepository medicationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MedicalProcedureRepository medicalProcedureRepository;
 
     @Override
     @Transactional
@@ -50,6 +55,53 @@ public class DataLoader implements CommandLineRunner {
             entityManager.persist(doctorRole);
             entityManager.persist(pacientRole);
 
+            Department department1 = Department.builder()
+                    .name("Cardiologie")
+                    .build();
+
+            Department department2 = Department.builder()
+                    .name("Neurologie")
+                    .build();
+
+            departmentRepository.save(department1);
+            departmentRepository.save(department2);
+
+            MedicalProcedure medicalProcedure1 = MedicalProcedure.builder()
+                    .name("EKG")
+                    .price(100)
+                    .department(department1)
+                    .build();
+
+            MedicalProcedure medicalProcedure2 = MedicalProcedure.builder()
+                    .name("Holter")
+                    .price(150)
+                    .department(department1)
+                    .build();
+
+            MedicalProcedure medicalProcedure3 = MedicalProcedure.builder()
+                    .name("Bypasser")
+                    .price(500)
+                    .department(department1)
+                    .build();
+
+            MedicalProcedure medicalProcedure4 = MedicalProcedure.builder()
+                    .name("EMG")
+                    .price(120)
+                    .department(department2)
+                    .build();
+
+            MedicalProcedure medicalProcedure5 = MedicalProcedure.builder()
+                    .name("Tomografie computerizata")
+                    .price(180)
+                    .department(department2)
+                    .build();
+
+            medicalProcedureRepository.save(medicalProcedure1);
+            medicalProcedureRepository.save(medicalProcedure2);
+            medicalProcedureRepository.save(medicalProcedure3);
+            medicalProcedureRepository.save(medicalProcedure4);
+            medicalProcedureRepository.save(medicalProcedure5);
+
             User userAdmin = User.builder()
                     .username("admin_1")
                     .password(passwordEncoder.encode("123456"))
@@ -63,8 +115,8 @@ public class DataLoader implements CommandLineRunner {
                     .username("doctor_1")
                     .password(passwordEncoder.encode("123456"))
                     .email("doctor_1@email.com")
-                    .firstName("Doctor")
-                    .lastName("Unu")
+                    .firstName("Alin")
+                    .lastName("Sava")
                     .roles(Collections.singleton(doctorRole))
                     .build();
 
@@ -72,8 +124,8 @@ public class DataLoader implements CommandLineRunner {
                     .username("doctor_2")
                     .password(passwordEncoder.encode("123456"))
                     .email("doctor_2@email.com")
-                    .firstName("Doctor")
-                    .lastName("Doi")
+                    .firstName("Vlad")
+                    .lastName("Duncea")
                     .roles(Collections.singleton(doctorRole))
                     .build();
 
@@ -81,8 +133,8 @@ public class DataLoader implements CommandLineRunner {
                     .username("doctor_3")
                     .password(passwordEncoder.encode("123456"))
                     .email("doctor_3@email.com")
-                    .firstName("Doctor")
-                    .lastName("Trei")
+                    .firstName("Cristian")
+                    .lastName("Plamadeala")
                     .roles(Collections.singleton(doctorRole))
                     .build();
 
@@ -90,8 +142,8 @@ public class DataLoader implements CommandLineRunner {
                     .username("pacient_1")
                     .password(passwordEncoder.encode("123456"))
                     .email("pacient_1@email.com")
-                    .firstName("Pacient")
-                    .lastName("Unu")
+                    .firstName("Marius")
+                    .lastName("Iordache")
                     .roles(Collections.singleton(pacientRole))
                     .build();
 
@@ -99,8 +151,8 @@ public class DataLoader implements CommandLineRunner {
                     .username("pacient_2")
                     .password(passwordEncoder.encode("123456"))
                     .email("pacient_2@email.com")
-                    .firstName("Pacient")
-                    .lastName("Doi")
+                    .firstName("Cristina")
+                    .lastName("Stefanescu")
                     .roles(Collections.singleton(pacientRole))
                     .build();
 
@@ -112,6 +164,72 @@ public class DataLoader implements CommandLineRunner {
 
             userRepository.save(userPacient1);
             userRepository.save(userPacient2);
+
+            Doctor doctor1 = Doctor.builder()
+                    .user(userDoctor1)
+                    .department(department1)
+                    .interese("Chirurgie toracica")
+                    .skill("EKG")
+                    .memberIn("Colegiul Medicilor")
+                    .build();
+
+            Doctor doctor2 = Doctor.builder()
+                    .user(userDoctor2)
+                    .department(department1)
+                    .interese("Chirurgie minim-invaziva")
+                    .skill("Da Vinci")
+                    .memberIn("Colegiul Medicilor si ANOSR")
+                    .build();
+
+            Doctor doctor3 = Doctor.builder()
+                    .user(userDoctor2)
+                    .department(department1)
+                    .interese("-")
+                    .skill("Skill1, skill2")
+                    .memberIn("Fara")
+                    .build();
+
+            doctorRepository.save(doctor1);
+            doctorRepository.save(doctor2);
+            doctorRepository.save(doctor3);
+
+            Patient patient1 = Patient.builder()
+                    .cnp("1111111111111")
+                    .user(userPacient1)
+                    .build();
+
+            Patient patient2 = Patient.builder()
+                    .cnp("2222222222222")
+                    .user(userPacient2)
+                    .build();
+
+            patientRepository.save(patient1);
+            patientRepository.save(patient2);
+
+            Medication medication1 = Medication.builder()
+                    .name("Paracetamol")
+                    .quantity(300)
+                    .build();
+
+            Medication medication2 = Medication.builder()
+                    .name("Paracetamol")
+                    .quantity(600)
+                    .build();
+
+            Medication medication3 = Medication.builder()
+                    .name("Ibuprofen")
+                    .quantity(500)
+                    .build();
+
+            Medication medication4 = Medication.builder()
+                    .name("Controloc")
+                    .quantity(1000)
+                    .build();
+
+            medicationRepository.save(medication1);
+            medicationRepository.save(medication2);
+            medicationRepository.save(medication3);
+            medicationRepository.save(medication4);
         }
     }
 }
