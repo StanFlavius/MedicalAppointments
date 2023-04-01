@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Departments</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.1.3/css/bootstrap.min.css"/>
+    <script src="/webjars/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+</head>
+
+<!--<div th:insert="navbar :: navbar"></div>-->
+
+<body>
+<div class="container">
+    <table class="table table-striped table-hover ">
+        <thead class="thead-inverse">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Details</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tr th:each="dept: ${departments}">
+
+            <td th:text="${dept.getId()}"></td>
+            <td th:text="${dept.getName()}"></td>
+            <td>
+                <a href="#" th:href="@{'/departments/{id}'(id=${dept.id})}">
+                    <button class="btn btn-secondary">Details</button>
+                </a>
+            </td>
+            <td>
+                <a class="btn btn-secondary" href="#" th:href="@{/departments/{id}/edit(id=${dept.id})}"
+                   role="button">
+                    Edit
+                </a>
+            </td>
+            <td>
+                <form th:object="${dept}" th:action="@{/departments/{id}/delete(id=${dept.id})}" th:method="GET">
+                    <button class="btn btn-secondary">Delete</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <a class="btn btn-primary" role="button" th:href="@{'/departments/new'}" th:method="put">Add department</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
