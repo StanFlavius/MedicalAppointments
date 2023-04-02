@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @NoArgsConstructor
 @Slf4j
 public class DepartmentController {
-    public final static String REDIRECT = "redirect:/";
-    public final static String BINDING_RESULT_PATH = "org.springframework.validation.BindingResult.";
-
     public final static String ALL_DEPARTMENTS = "departments";
 
     @Autowired
