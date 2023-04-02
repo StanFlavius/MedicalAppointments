@@ -3,8 +3,10 @@ package com.example.medicalappointments.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.medicalappointments.model.Regex.CNP_REGEX;
@@ -26,10 +28,11 @@ public class Patient {
     @NotBlank(message = "CNP must be provided!")
     private String cnp;
 
-    @OneToOne
+    @Valid
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "FK_USER_ID")
     private User user;
 
     @OneToMany(mappedBy = "medicalProcedure", cascade = CascadeType.ALL)
-    private List<Consult> consults;
+    private List<Consult> consults = new ArrayList<>();
 }
