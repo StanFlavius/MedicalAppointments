@@ -91,7 +91,7 @@
             <div class="row row justify-content-md-center mt-2">
                 <div class="col-md-3">
                     <label>CNP:</label>
-                    <input type="text" pattern="[0-9]+" title="Only digits allowed!" class="form-control" th:field="*{cnp}" placeholder="CNP"/>
+                    <input type="text" class="form-control" th:field="*{cnp}" placeholder="CNP"/>
                     <label th:if="${#fields.hasErrors('cnp')}" th:errors="*{cnp}" type="error"
                            class="error text-danger">
                         Error
