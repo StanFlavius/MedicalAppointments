@@ -1,7 +1,7 @@
 package com.example.medicalappointments.bootstrap;
 
 import com.example.medicalappointments.model.*;
-import com.example.medicalappointments.model.security.Role;
+import com.example.medicalappointments.model.Role;
 import com.example.medicalappointments.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

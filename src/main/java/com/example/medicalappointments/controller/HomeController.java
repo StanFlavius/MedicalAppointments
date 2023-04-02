@@ -24,4 +24,9 @@ public class HomeController {
     public String accessDenied() {
         return "err_access_denied";
     }
+
+    @GetMapping({"", "/", "/index"})
+    public String home() {
+        return "home";
+    }
 }
