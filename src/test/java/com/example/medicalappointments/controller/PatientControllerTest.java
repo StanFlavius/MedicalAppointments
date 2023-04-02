@@ -11,6 +11,7 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,6 +61,31 @@ class PatientControllerTest {
                 .andExpect(model().hasErrors())
                 .andExpect(model().attributeHasFieldErrors("patient", "cnp", "user.username",
                         "user.email", "user.password", "user.firstName", "user.lastName"));
+    }
+
+    @Test
+    @WithAnonymousUser
+    void showLoginPage_success() throws Exception {
+        mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("login"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithAnonymousUser
+    void loginAsPatient_success() throws Exception {
+        mockMvc.perform(formLogin("/authUser").user("pacient_1").password("123456"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+    }
+
+    @Test
+    @WithAnonymousUser
+    void loginAsPatient_invalidCredentials_failure() throws Exception {
+        mockMvc.perform(formLogin("/authUser").user("pacient_1").password("bad_credentials"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error"));
     }
 
     private Patient createPatient() {
