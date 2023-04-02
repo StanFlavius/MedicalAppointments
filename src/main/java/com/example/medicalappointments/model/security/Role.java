@@ -1,4 +1,4 @@
-package com.example.medicalappointments.model;
+package com.example.medicalappointments.model.security;
 
 import lombok.*;
 
