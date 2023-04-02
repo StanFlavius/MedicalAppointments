@@ -5,7 +5,6 @@ import com.example.medicalappointments.model.Role;
 import com.example.medicalappointments.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +16,6 @@ import static com.example.medicalappointments.configuration.SecurityConfiguratio
 
 @Component
 @RequiredArgsConstructor
-@Profile("dataLoader")
 public class DataLoader implements CommandLineRunner {
 
     private final EntityManager entityManager;
