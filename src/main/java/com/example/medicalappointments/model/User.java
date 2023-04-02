@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -58,7 +59,7 @@ public class User {
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
     )
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles().stream()

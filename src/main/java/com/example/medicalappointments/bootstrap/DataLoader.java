@@ -17,7 +17,7 @@ import static com.example.medicalappointments.configuration.SecurityConfiguratio
 
 @Component
 @RequiredArgsConstructor
-@Profile("dataLoader")
+@Profile({ "dataLoader", "h2"})
 public class DataLoader implements CommandLineRunner {
 
     private final EntityManager entityManager;
