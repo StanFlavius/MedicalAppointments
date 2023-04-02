@@ -21,7 +21,7 @@ public class DepartmentController {
     @Autowired
     private DepartmentServiceImpl departmentService;
 
-    @GetMapping(value = {"", "/", "/index"})
+    @GetMapping()
     public String getAll(Model model) {
         model.addAttribute("departments", departmentService.getAllDepartments());
         return ALL_DEPARTMENTS;
