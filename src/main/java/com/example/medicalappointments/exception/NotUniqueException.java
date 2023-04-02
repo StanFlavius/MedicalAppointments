@@ -1,12 +1,20 @@
 package com.example.medicalappointments.exception;
 
+import lombok.Getter;
+
+@Getter
 public class NotUniqueException extends RuntimeException {
 
-    public NotUniqueException() {
-        super();
+    private final ConflictingField conflictingField;
+
+    public NotUniqueException(ConflictingField conflictingField, String message) {
+        super(message);
+        this.conflictingField = conflictingField;
     }
 
-    public NotUniqueException(String message) {
-        super(message);
+    public enum ConflictingField {
+        USERNAME,
+        EMAIL,
+        CNP
     }
 }
