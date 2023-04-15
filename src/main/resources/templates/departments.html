@@ -17,7 +17,7 @@
             <th>ID</th>
             <th>Name</th>
             <th>Details</th>
-            <th>Edit</th>
+            <th sec:authorize="hasRole('ADMIN')">Edit</th>
             <th>Delete</th>
         </tr>
         </thead>
@@ -30,7 +30,7 @@
                     <button class="btn btn-secondary">Details</button>
                 </a>
             </td>
-            <td>
+            <td sec:authorize="hasRole('ADMIN')">
                 <a class="btn btn-secondary" href="#" th:href="@{/departments/{id}/edit(id=${dept.id})}"
                    role="button">
                     Edit
@@ -44,7 +44,7 @@
         </tr>
     </table>
 </div>
-<div class="container">
+<div class="container" sec:authorize="hasRole('ADMIN')">
     <div class="row">
         <div class="col-md-6">
             <a class="btn btn-primary" role="button" th:href="@{'/departments/new'}" th:method="put">Add department</a>
