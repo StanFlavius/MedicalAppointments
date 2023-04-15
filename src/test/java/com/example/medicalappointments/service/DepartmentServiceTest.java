@@ -1,8 +1,8 @@
 package com.example.medicalappointments.service;
 
+import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.model.Department;
 import com.example.medicalappointments.repository.DepartmentRepository;
-import com.example.medicalappointments.service.interfaces.DepartmentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,9 +12,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,8 +40,44 @@ public class DepartmentServiceTest {
         verify(departmentRepository, times(1)).findAll();
     }
 
+    @Test
+    void savePatient_success() {
+        Department department = createDepartment();
+        Department persistedDepartment = createPersistedDepartment();
+
+        when(departmentRepository.findDepartmentByName(department.getName())).thenReturn(Optional.empty());
+        when(departmentRepository.save(department)).thenReturn(persistedDepartment);
+
+        Department resultedDepartment = departmentService.saveDepartment(department);
+
+        assertNotNull(resultedDepartment);
+        assertEquals(persistedDepartment.getId(), resultedDepartment.getId());
+        assertEquals(persistedDepartment.getName(), resultedDepartment.getName());
+
+        verify(departmentRepository, times(1)).findDepartmentByName(department.getName());
+        verify(departmentRepository, times(1)).save(department);
+    }
+
+    @Test
+    void savePatient_notUniqueName_exception() {
+        Department department = createDepartment();
+
+        when(departmentRepository.findDepartmentByName(department.getName())).thenReturn(Optional.of(department));
+
+        CustomException exception = assertThrows(CustomException.class, () -> departmentService.saveDepartment(department));
+
+        assertEquals(String.format("Department with name %s already exists!", department.getName()), exception.getMessage());
+    }
+
     private Department createDepartment() {
         return Department.builder()
+                .name("Neurologie")
+                .build();
+    }
+
+    private Department createPersistedDepartment() {
+        return Department.builder()
+                .id(1L)
                 .name("Neurologie")
                 .build();
     }
