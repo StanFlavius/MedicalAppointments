@@ -1,7 +1,6 @@
 package com.example.medicalappointments.service;//package com.example.project.service;
 
 import com.example.medicalappointments.model.Doctor;
-import com.example.medicalappointments.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +28,7 @@ public class DoctorServiceTest {
         List<Doctor> doctors = doctorService.getAllDoctors();
 
         assertEquals(3, doctors.size());
-        assertThat(doctors.stream().map(Doctor::getUser).map(User::getLastName).collect(toList()),
+        assertThat(doctors.stream().map(doc -> doc.getUser().getLastName()).collect(toList()),
                 containsInAnyOrder("Sava", "Duncea", "Plamadeala"));
     }
 
