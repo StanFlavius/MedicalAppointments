@@ -18,6 +18,12 @@
                 <li><a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/departments' ? 'active':''}"
                        th:href="@{/departments}">Departments</a></li>
 
+                <li>
+                    <a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/doctors' ? 'active':''}"
+                       th:href="@{/doctors}">Doctors
+                    </a>
+                </li>
+
                 <li sec:authorize="!isAuthenticated()"><a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/login' ? 'active':''}"
                                                           th:href="@{/login}">Login</a></li>
 
