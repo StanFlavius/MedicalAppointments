@@ -182,7 +182,7 @@ public class DataLoader implements CommandLineRunner {
                     .build();
 
             Doctor doctor3 = Doctor.builder()
-                    .user(userDoctor2)
+                    .user(userDoctor3)
                     .department(department1)
                     .interese("-")
                     .skill("Skill1, skill2")
