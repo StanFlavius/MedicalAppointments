@@ -31,4 +31,10 @@ public class DoctorController {
         model.addAttribute("doctor", doctor);
         return VIEW_DOCTOR;
     }
+
+    @GetMapping("/{id}/delete")
+    public String deleteDoctor(@PathVariable Long id) {
+        doctorService.deleteDoctorById(id);
+        return "redirect:/" + ALL_DOCTORS;
+    }
 }

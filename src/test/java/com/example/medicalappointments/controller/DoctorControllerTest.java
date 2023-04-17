@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -60,5 +61,29 @@ public class DoctorControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(view().name("err_not_found"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void deleteDoctor_admin_success() throws Exception {
+        mockMvc.perform(get("/doctors/{id}/delete", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/doctors"));
+    }
+
+    @Test
+    @WithMockUser(username = "doctor_1", password = "123456", roles = "DOCTOR")
+    public void deleteDoctor_doctor_fail() throws Exception {
+        mockMvc.perform(get("/doctors/{id}/delete", "1"))
+                .andExpect(status().isForbidden())
+                .andExpect(forwardedUrl("/access-denied"));
+    }
+
+    @Test
+    @WithAnonymousUser
+    public void deleteDoctor_anonymous_fail() throws Exception {
+        mockMvc.perform(get("/doctors/{id}/delete", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("http://localhost/login"));
     }
 }

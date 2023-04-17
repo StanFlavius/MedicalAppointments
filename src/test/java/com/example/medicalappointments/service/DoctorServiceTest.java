@@ -10,14 +10,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -73,6 +71,28 @@ public class DoctorServiceTest {
         when(doctorRepository.findById(doctor.getId())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> doctorService.findById(doctor.getId()));
+    }
+
+    @Test
+    public void removeDoctor_success() {
+        Role doctorRole = createDoctorRole();
+        Doctor doctor = createPersistedDoctor(doctorRole);
+
+        doNothing().when(doctorRepository).deleteById(doctor.getId());
+
+        doctorService.deleteDoctorById(doctor.getId());
+
+        verify(doctorRepository, times(1)).deleteById(doctor.getId());
+    }
+
+    @Test
+    public void removeDoctor_success_doctorNotFound_exception() {
+        Role doctorRole = createDoctorRole();
+        Doctor doctor = createPersistedDoctor(doctorRole);
+
+        doThrow(EmptyResultDataAccessException.class).when(doctorRepository).deleteById(doctor.getId());
+
+        assertThrows(EmptyResultDataAccessException.class, () -> doctorService.deleteDoctorById(doctor.getId()));
     }
 
     private Doctor createDoctor() {
