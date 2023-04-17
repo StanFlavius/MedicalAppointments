@@ -1,5 +1,6 @@
 package com.example.medicalappointments.service;
 
+import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,4 +18,11 @@ public class DoctorService {
         return doctorRepository.findAll();
     }
 
+    public Doctor findById(Long id) {
+        return doctorRepository.findById(id)
+                .orElseThrow(() -> EntityNotFoundException.builder()
+                        .entityId(id)
+                        .entityType("Doctor")
+                        .build());
+    }
 }

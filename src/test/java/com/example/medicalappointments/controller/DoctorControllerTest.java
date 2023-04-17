@@ -34,4 +34,31 @@ public class DoctorControllerTest {
                 .andExpect(view().name("doctors"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"));
     }
+
+    @Test
+    @WithMockUser(username = "patient_1", password = "123456", roles = "PATIENT")
+    public void showDoctors_patient_success() throws Exception {
+        mockMvc.perform(get("/doctors"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("doctors"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "patient_1", password = "123456", roles = "PATIENT")
+    public void showDoctorInfo_patient_success() throws Exception {
+        mockMvc.perform(get("/doctors/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("doctor_info"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "patient_1", password = "123456", roles = "PATIENT")
+    public void showDoctorInfo_doctorNotFound_patient_error() throws Exception {
+        mockMvc.perform(get("/doctors/{1}", "999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("err_not_found"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
 }
