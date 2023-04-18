@@ -19,6 +19,7 @@
             <th>Last name</th>
             <th>Department</th>
             <th>Details</th>
+            <th sec:authorize="hasRole('ADMIN')">Delete</th>
         </tr>
         </thead>
         <tr th:each="doctor: ${doctors}">
@@ -31,6 +32,11 @@
                 <a href="#" th:href="@{'/doctors/{id}'(id=${doctor.id})}">
                     <button class="btn btn-secondary">Details</button>
                 </a>
+            </td>
+            <td sec:authorize="hasRole('ADMIN')">
+                <form th:object="${doctor}" th:action="@{/doctors/{id}/delete(id=${doctor.id})}" th:method="GET">
+                    <button class="btn btn-secondary">Delete</button>
+                </form>
             </td>
         </tr>
     </table>

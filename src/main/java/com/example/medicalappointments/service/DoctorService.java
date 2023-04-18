@@ -25,4 +25,8 @@ public class DoctorService {
                         .entityType("Doctor")
                         .build());
     }
+
+    public void deleteDoctorById(Long id) {
+        doctorRepository.deleteById(id);
+    }
 }
