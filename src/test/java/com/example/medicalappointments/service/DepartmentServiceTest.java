@@ -28,6 +28,7 @@ public class DepartmentServiceTest {
 
     private static final Long ID = 1L;
 
+
     @Test
     @DisplayName("Get all departments - success")
     void getAll_success() {
