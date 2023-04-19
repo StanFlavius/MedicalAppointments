@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     boolean existsByCnp(String cnp);
+
+    Optional<Patient> findByUser_Id(Long userId);
 }

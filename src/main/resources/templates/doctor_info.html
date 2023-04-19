@@ -65,6 +65,11 @@
                             <label>Member in:</label>
                             <input type="text" disabled class="form-control" th:field="${doctor.memberIn}"/>
                         </div>
+
+                        <div style="margin-top: 15px">
+                            <label>Department:</label>
+                            <input type="text" disabled class="form-control" th:field="${doctor.department.name}"/>
+                        </div>
                     </div>
 
                     <div class="col col-md-9">
@@ -84,7 +89,7 @@
                                 <td th:text="${consult.id}"></td>
                                 <td th:text="|${consult.patient.user.lastName} ${consult.patient.user.firstName}|"></td>
                                 <td th:text="${doctor.department.name}"></td>
-                                <td th:text="${T(com.example.project.service.Helper).formatDate(consult.date)}"></td>
+                                <td th:text="${T(com.example.medicalappointments.service.Helper).formatDate(consult.date)}"></td>
                                 <td>
                                     <a class="btn btn-secondary" th:href="@{'/consults/{id}'(id=${consult.id})}"
                                        role="button" href="#">
@@ -105,13 +110,6 @@
                                 </td>
                             </tr>
                         </table>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-3">
-                        <label class="col-form-label">Department:</label>
-                        <input type="text" disabled class="form-control" th:field="${doctor.department.name}"/>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 package com.example.medicalappointments.controller;
 
+import com.example.medicalappointments.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +11,14 @@ public class HomeController {
 
     public final static String ACCESS_DENIED = "access-denied";
 
+    private final UserService userService;
+
     @GetMapping("/login")
     public String showLoginForm() {
+        if (userService.isLoggedIn()) {
+            return "redirect:/index";
+        }
+
         return "login";
     }
 

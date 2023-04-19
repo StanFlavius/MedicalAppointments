@@ -25,8 +25,8 @@ public class Consult {
     private Long id;
 
     @NotNull(message = "Date must be provided!")
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "yyyy-MM-dd")
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME, pattern = "yyyy-MM-dd'T'HH:mm")
     private Date date = new Date();
 
     @Length(min = 10, message = "Please enter at least 10 characters!")
@@ -38,6 +38,7 @@ public class Consult {
     @Length(min = 5, message = "Please enter at least 5 characters!")
     private String comment;
 
+    @NotNull(message = "A doctor must be selected!")
     @ManyToOne
     @JoinColumn(name = "FK_DOCTOR_ID")
     private Doctor doctor;
