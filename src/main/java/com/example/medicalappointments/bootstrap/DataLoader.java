@@ -168,7 +168,7 @@ public class DataLoader implements CommandLineRunner {
             Doctor doctor1 = Doctor.builder()
                     .user(userDoctor1)
                     .department(department1)
-                    .interese("Chirurgie toracica")
+                    .interests("Chirurgie toracica")
                     .skill("EKG")
                     .memberIn("Colegiul Medicilor")
                     .build();
@@ -176,7 +176,7 @@ public class DataLoader implements CommandLineRunner {
             Doctor doctor2 = Doctor.builder()
                     .user(userDoctor2)
                     .department(department1)
-                    .interese("Chirurgie minim-invaziva")
+                    .interests("Chirurgie minim-invaziva")
                     .skill("Da Vinci")
                     .memberIn("Colegiul Medicilor si ANOSR")
                     .build();
@@ -184,7 +184,7 @@ public class DataLoader implements CommandLineRunner {
             Doctor doctor3 = Doctor.builder()
                     .user(userDoctor3)
                     .department(department1)
-                    .interese("-")
+                    .interests("-")
                     .skill("Skill1, skill2")
                     .memberIn("Fara")
                     .build();

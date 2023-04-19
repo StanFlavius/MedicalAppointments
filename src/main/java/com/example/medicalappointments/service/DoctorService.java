@@ -2,6 +2,7 @@ package com.example.medicalappointments.service;
 
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.model.Doctor;
+import com.example.medicalappointments.model.User;
 import com.example.medicalappointments.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,22 @@ public class DoctorService {
                         .entityType("Doctor")
                         .build());
     }
+
+    public Doctor saveOrUpdateUser(Doctor doctor, User user) {
+
+        Doctor doctorInDB = findById(doctor.getId());
+        User userInDB = doctorInDB.getUser();
+
+        userInDB.setFirstName(user.getFirstName());
+        userInDB.setLastName(user.getLastName());
+
+        doctor.setConsults(doctorInDB.getConsults());
+        doctor.setUser(userInDB);
+
+        return doctorRepository.save(doctor);
+    }
+
+
 
     public void deleteDoctorById(Long id) {
         doctorRepository.deleteById(id);
