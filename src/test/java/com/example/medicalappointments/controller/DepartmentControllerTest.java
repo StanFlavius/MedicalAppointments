@@ -39,12 +39,29 @@ public class DepartmentControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "pacient_1", roles={"PATIENT"})
+    public void showDepartmentInfo_pacient_user_success() throws Exception {
+        mockMvc.perform(get("/departments/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("department_info"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
     @WithAnonymousUser
     public void showDepartmentInfo_unauthenticated_user_success() throws Exception {
         mockMvc.perform(get("/departments/{1}", "1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("department_info"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithAnonymousUser
+    void getAllByUnauthenticatedUser_success() throws Exception {
+        mockMvc.perform(get("/departments")
+                .flashAttr("department", Collections.singletonList(createDepartment())))
+                .andExpect(status().isOk());
     }
 
     @Test
