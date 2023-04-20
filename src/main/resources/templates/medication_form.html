@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medication</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.1.3/css/bootstrap.min.css"/>
+    <script src="/webjars/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+<body>
+
+<div th:insert="navbar :: navbar">  </div>
+
+<form th:action="@{/medications/}" method="post">
+    <input name="id" type="hidden" th:field="${medication.id}"/>
+    <div class="container">
+
+        <div class="panel panel-primary">
+
+            <div class="panel-heading" style="background-color:lightgray;">
+                <h1 class="panel-title">Details</h1>
+            </div>
+
+            <br>
+
+            <div class="panel-body">
+
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <h3>Medication details</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col col-md-3">
+
+                            <div>
+                                <label>Name:</label>
+                                <input name="name" type="text" class="form-control" th:field="${medication.name}"/>
+                                <label th:if="${#fields.hasErrors('medication.name')}" th:errors="${medication.name}"
+                                       type="error" class="error text-danger">
+                                    Error
+                                </label>
+                            </div>
+
+                            <div style="margin-top: 15px">
+                                <label>Quantity:</label>
+                                <input name="quantity" type="number" min="1" class="form-control"
+                                       th:field="${medication.quantity}"/>
+                                <label th:if="${#fields.hasErrors('medication.quantity')}"
+                                       th:errors="${medication.quantity}" type="error" class="error text-danger">
+                                    Error
+                                </label>
+                                <label th:if="${error_medication} != null" class="error text-danger"
+                                       th:text="${error_medication}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 ml-md-auto" style="margin-top:10px">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>
