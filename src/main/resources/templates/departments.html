@@ -18,7 +18,7 @@
             <th>Name</th>
             <th>Details</th>
             <th sec:authorize="hasRole('ADMIN')">Edit</th>
-            <th>Delete</th>
+            <th sec:authorize="hasRole('ADMIN')">Delete</th>
         </tr>
         </thead>
         <tr th:each="dept: ${departments}">
@@ -36,7 +36,7 @@
                     Edit
                 </a>
             </td>
-            <td>
+            <td sec:authorize="hasRole('ADMIN')">
                 <form th:object="${dept}" th:action="@{/departments/{id}/delete(id=${dept.id})}" th:method="GET">
                     <button class="btn btn-secondary">Delete</button>
                 </form>

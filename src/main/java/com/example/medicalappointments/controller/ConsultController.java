@@ -12,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -38,7 +35,9 @@ public class ConsultController {
     private final ConsultService consultService;
 
     @GetMapping("/new")
-    public String showConsultForm(Model model) {
+    public String showConsultForm(@RequestParam(value = "department", required = false) Long departmentId,
+                                  @RequestParam(value = "doctor", required = false) Long doctorId,
+                                  Model model, RedirectAttributes attr) {
         List<Department> allDepartments = departmentService.getAllDepartments();
         List<Doctor> allDoctors = doctorService.getAllDoctors();
         Consult consult = new Consult();
@@ -50,12 +49,32 @@ public class ConsultController {
             model.addAttribute("consult", consult);
         }
 
+        if (departmentId != null || doctorId != null) {
+            attr.addFlashAttribute("consult", consult);
+            attr.addFlashAttribute("selectedDepartment", departmentId);
+            attr.addFlashAttribute("selectedDoctor", doctorId);
+            attr.addFlashAttribute("allDepartments", allDepartments);
+            attr.addFlashAttribute("allDoctors", allDoctors);
+            attr.addFlashAttribute("doctorsDepartments", getDoctorsDepartments(allDoctors));
+            return REDIRECT + ALL_CONSULTS + "/new";
+        }
+
         model.addAttribute("allDepartments", allDepartments);
         model.addAttribute("allDoctors", allDoctors);
-        model.addAttribute("doctorsDepartments", allDoctors.stream().map(doc ->
-                Doctor.builder().id(doc.getId()).department(Department.builder().id(doc.getDepartment().getId()).build()).build()).collect(Collectors.toList()));
+        model.addAttribute("doctorsDepartments", getDoctorsDepartments(allDoctors));
 
         return "consult_form";
+    }
+
+    private List<Doctor> getDoctorsDepartments(List<Doctor> doctors) {
+        return doctors.stream()
+                .map(doc -> Doctor.builder()
+                        .id(doc.getId())
+                        .department(Department.builder()
+                                .id(doc.getDepartment().getId())
+                                .build())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @PostMapping
@@ -84,5 +103,10 @@ public class ConsultController {
             return REDIRECT + ALL_CONSULTS + "/new";
         }
         return REDIRECT + ALL_CONSULTS;
+    }
+
+    @GetMapping
+    public String getConsults() {
+        return "consults";
     }
 }

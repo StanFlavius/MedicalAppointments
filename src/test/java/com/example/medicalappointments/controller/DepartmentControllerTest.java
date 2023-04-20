@@ -39,6 +39,15 @@ public class DepartmentControllerTest {
     }
 
     @Test
+    @WithAnonymousUser
+    public void showDepartmentInfo_unauthenticated_user_success() throws Exception {
+        mockMvc.perform(get("/departments/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("department_info"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
     @WithMockUser(username = "pacient_1", roles={"PATIENT"})
     void getAllByPatientUser_success() throws Exception {
         mockMvc.perform(get("/departments")

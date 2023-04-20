@@ -49,7 +49,8 @@
                             <option th:each="department : ${allDepartments}"
                                     th:value="${department.id}"
                                     th:utext="|${department.name}|"
-                                    th:id="'dep' + ${department.id}">
+                                    th:id="'dep' + ${department.id}"
+                                    th:selected="${consult.doctor.department.id != null && consult.doctor.department.id eq department.id}">
                             </option>
                         </select>
                     </div>
@@ -57,11 +58,12 @@
                     <div class="col-md-4">
                         <label class="col-form-label">Doctor:</label>
                         <select th:disabled="*{doctor.department.id == null}" th:id="'doctor'" class="form-control" th:field="*{doctor.id}" />
-                            <option selected disabled th:id="'defaultDoc'" th:value="null"> -- Select a doctor -- </option>
+                            <option th:selected="*{doctor.id == null}" disabled th:id="'defaultDoc'" th:value="null"> -- Select a doctor -- </option>
                             <option th:each="doctor : ${allDoctors}"
                                     th:value="${doctor.id}"
                                     th:utext="|${doctor.user.lastName} ${doctor.user.firstName}|"
-                                    th:id="'doc' + ${doctor.id}">
+                                    th:id="'doc' + ${doctor.id}"
+                                    th:selected="${consult.doctor.id != null  && consult.doctor.id eq doctor.id}">
                             </option>
                         </select>
                         <label th:if="${#fields.hasErrors('doctor')}" th:errors="*{doctor}" type="error"
@@ -152,21 +154,38 @@
     const doctors = [[${doctorsDepartments}]];
 
     window.onload = () => {
+        const redirectedDepartment = [[${selectedDepartment}]];
+        const redirectedDoctor = [[${selectedDoctor}]];
+        const departmentSelect = $("#department");
+        const doctorSelect = $("#doctor");
+
+        if (redirectedDoctor != null) {
+            const chosenDepartment = doctors
+                .filter(doc => doc.id === redirectedDoctor)
+                .map(doc => doc.department.id)[0];
+            departmentSelect.val(chosenDepartment).change();
+            doctorSelect.val(redirectedDoctor).change();
+        } else if (redirectedDepartment != null) {
+            departmentSelect.val(redirectedDepartment).change();
+        }
+
         updateDoctorsVisibility();
     }
 
     function updateDoctorsVisibility() {
-        const chosenDepartment = $("#department").val();
+        const departmentSelect = $("#department");
+        let chosenDepartment = departmentSelect.val();
 
         if (chosenDepartment != null) {
-            $("#doctor").attr("disabled", false);
+            const doctorSelect = $("#doctor");
+            doctorSelect.attr("disabled", false);
 
             for (let doc of doctors) {
                 let option = $(`#doc${doc.id}`);
                 option.attr('hidden', doc.department.id.toString() !== chosenDepartment);
 
                 if (option.is(":selected") === true && option.is(":disabled") !== true && doc.department.id.toString() !== chosenDepartment) {
-                    $("#doctor").val(null).change();
+                    doctorSelect.val(null).change();
                 }
             }
         }
