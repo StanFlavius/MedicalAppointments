@@ -7,11 +7,21 @@ import com.example.medicalappointments.repository.MedicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class MedicationService {
 
     private final MedicationRepository medicationRepository;
+
+    public List<Medication> getAllMedications() {
+        return medicationRepository.findAll().stream()
+                .sorted(Comparator.comparing(Medication::getName).thenComparing(Medication::getQuantity))
+                .collect(Collectors.toList());
+    }
 
     public Medication saveMedication(Medication medication) {
         checkIfMedicationAlreadyExistsByNameAndQuantity(medication.getName(), medication.getQuantity());

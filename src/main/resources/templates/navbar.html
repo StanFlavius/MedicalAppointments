@@ -21,6 +21,13 @@
                     </a>
                 </li>
 
+                <li sec:authorize="hasAnyRole('ADMIN')">
+                    <a class="nav-link"
+                       th:classappend="${#httpServletRequest.getRequestURI() == '/medications' ? 'active':''}"
+                       th:href="@{/medications}">Medications
+                    </a>
+                </li>
+
                 <li><a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/departments' ? 'active':''}"
                        th:href="@{/departments}">Departments</a></li>
 
