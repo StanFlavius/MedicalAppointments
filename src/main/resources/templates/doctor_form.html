@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit doctor</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.1.3/css/bootstrap.min.css"/>
+    <script src="/webjars/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+<div th:insert="navbar :: navbar"></div>
+
+<form th:action="@{/doctors/}" method="post">
+    <input type="hidden" th:value="${doctor.id}" name="id"/>
+    <input type="hidden" th:value="${user.password}" name="password"/>
+    <input type="hidden" th:value="${user.email}" name="email"/>
+    <input type="hidden" th:value="${user.username}" name="username"/>
+    <div class="container">
+
+        <div class="panel panel-primary mt-2">
+
+            <div class="panel-heading" style="background-color:lightgray;">
+                <h1 class="panel-title" style="padding: 5px">Edit Doctor</h1>
+            </div>
+
+            <br>
+
+            <div class="panel-body">
+
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-md-3" style="text-align:center">
+                            <h3>Personal details</h3>
+                        </div>
+
+
+                        <div class="col-md-9" style="text-align:center">
+                            <h3>Consults</h3>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col col-md-3">
+
+                            <div>
+                                <label>Last name:</label>
+                                <input type="text" name="lastName" class="form-control" th:field="${user.lastName}"
+                                       placeholder="Last name"/>
+                                <label th:if="${#fields.hasErrors('user.lastName')}" th:errors="${user.lastName}"
+                                       type="error"
+                                       class="error text-danger">
+                                    Error
+                                </label>
+                            </div>
+
+                            <div style="margin-top: 15px">
+                                <label>First name:</label>
+                                <input type="text" name="firstName" class="form-control" th:field="${user.firstName}"
+                                       placeholder="First name"/>
+                                <label th:if="${#fields.hasErrors('user.firstName')}" th:errors="${user.firstName}"
+                                       type="error"
+                                       class="error text-danger">
+                                    Error
+                                </label>
+                            </div>
+
+                            <div style="margin-top: 15px">
+                                <label>Areas of interest:</label>
+                                <input type="text" name="areasOfInterest" class="form-control"
+                                       th:field="${doctor.interests}"
+                                       placeholder="Areas of interest:"/>
+                                <label th:if="${#fields.hasErrors('doctor.interests')}" th:errors="${doctor.interests}"
+                                       type="error"
+                                       class="error text-danger">
+                                    Error
+                                </label>
+                            </div>
+
+                            <div style="margin-top: 15px">
+                                <label>Competences:</label>
+                                <input type="text" name="areasOfInterest" class="form-control"
+                                       th:field="*{doctor.skill}"
+                                       placeholder="Areas of interest:"/>
+                                <label th:if="${#fields.hasErrors('doctor.skill')}" th:errors="*{doctor.skill}"
+                                       type="error"
+                                       class="error text-danger">
+                                    Error
+                                </label>
+                            </div>
+
+                            <div style="margin-top: 15px">
+                                <label>Member in:</label>
+                                <input type="text" name="memberIn" class="form-control" th:field="*{doctor.memberIn}"
+                                       placeholder="Member in:"/>
+                                <label th:if="${#fields.hasErrors('doctor.memberIn')}" th:errors="*{doctor.memberIn}"
+                                       type="error"
+                                       class="error text-danger">
+                                    Error
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col col-md-9">
+                            <table class="table table-striped table-hover">
+                                <thead class="thead-inverse">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Patient</th>
+                                    <th>Department</th>
+                                    <th>Date</th>
+                                    <th>Details</th>
+                                    <th sec:authorize="hasRole('ADMIN')">Edit</th>
+                                    <th sec:authorize="hasRole('ADMIN')">Delete</th>
+                                </tr>
+                                </thead>
+                                <tr th:each="consult: *{doctor.consults}">
+                                    <td th:text="${consult.id}"></td>
+                                    <td th:text="|${consult.patient.user.lastName} ${consult.patient.user.firstName}|"></td>
+                                    <td th:text="${doctor.department.name}"></td>
+                                    <td th:text="${T(com.example.project.service.Helper).formatDate(consult.date)}"></td>
+                                    <td>
+                                        <a class="btn btn-secondary" th:href="@{'/consults/{id}'(id=${consult.id})}"
+                                           role="button" href="#">
+                                            Details
+                                        </a>
+                                    </td>
+                                    <td sec:authorize="hasRole('ADMIN')">
+                                        <a class="btn btn-secondary"
+                                           th:href="@{'/consults/{id}/edit'(id=${consult.id})}"
+                                           href="#" role="button">
+                                            Edit
+                                        </a>
+                                    </td>
+                                    <td sec:authorize="hasRole('ADMIN')">
+                                        <form th:object="${doctor}"
+                                              th:action="@{'/consults/{id}/delete'(id=${consult.id})}"
+                                              th:method="GET">
+                                            <button class="btn btn-secondary">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="col-form-label">Department:</label>
+                            <select class="form-control" th:field="*{doctor.department.id}">
+                                <option th:each="dept : ${departmentAll}"
+                                        th:value="${dept.id}"
+                                        th:utext="${dept.name}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-1" style="margin-top:30px">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>
