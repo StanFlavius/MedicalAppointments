@@ -3,12 +3,15 @@ package com.example.medicalappointments.service;
 import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.model.Medication;
 import com.example.medicalappointments.repository.MedicationRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,6 +27,18 @@ public class MedicationServiceTest {
     private MedicationService medicationService;
 
     private static final Long ID = 1L;
+
+    @Test
+    @DisplayName("Get all medications - success")
+    void getAll_success() {
+        when(medicationRepository.findAll()).thenReturn(Collections.singletonList(createPersistedMedication()));
+
+        List<Medication> medications = medicationService.getAllMedications();
+
+        assertNotNull(medications);
+        assertEquals(1, medications.size());
+        verify(medicationRepository, times(1)).findAll();
+    }
 
     @Test
     void saveMedication_success() {

@@ -35,6 +35,13 @@ public class MedicationController {
         return ADD_EDIT_MEDICATION;
     }
 
+    @GetMapping
+    public String getAll(Model model) {
+        var medications = medicationService.getAllMedications();
+        model.addAttribute("medications", medications);
+        return ALL_MEDICATIONS;
+    }
+
     @GetMapping("/{id}/edit")
     public String editMedication(@PathVariable("id") String medicationId, Model model) {
         var medication = medicationService.getMedicationById(Long.valueOf(medicationId));
