@@ -1,9 +1,11 @@
 package com.example.medicalappointments.service;
 
 import com.example.medicalappointments.exception.EntityNotFoundException;
+import com.example.medicalappointments.model.Department;
 import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.Role;
 import com.example.medicalappointments.model.User;
+import com.example.medicalappointments.repository.DepartmentRepository;
 import com.example.medicalappointments.repository.DoctorRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,8 +29,31 @@ public class DoctorServiceTest {
     @Mock
     private DoctorRepository doctorRepository;
 
+    @Mock
+    private DepartmentRepository departmentRepository;
+
     @InjectMocks
     private DoctorService doctorService;
+
+    @Test
+    public void getDoctorsByDepartment() {
+        Role doctorRole = createDoctorRole();
+        Department department = createDepartment();
+        Doctor doctor = createPersistedDoctor2(doctorRole, department);
+
+        when(departmentRepository.getById(10L)).thenReturn(department);
+        when(doctorRepository.findByDepartment(department)).thenReturn(List.of(doctor));
+
+        List<Doctor> resultedDoctors = doctorService.getDoctorsByDepartment(Long.valueOf("10"));
+
+        assertEquals(1, resultedDoctors.size());
+        assertEquals(resultedDoctors.get(0).getId(), doctor.getId());
+        assertEquals(resultedDoctors.get(0).getUser().getId(), doctor.getUser().getId());
+        assertTrue(resultedDoctors.get(0).getUser().getRoles().contains(doctorRole));
+
+        verify(doctorRepository, times(1)).findByDepartment(department);
+        verify(departmentRepository, times(1)).getById(10L);
+    }
 
     @Test
     public void getAll_success() {
@@ -95,6 +120,14 @@ public class DoctorServiceTest {
         assertThrows(EmptyResultDataAccessException.class, () -> doctorService.deleteDoctorById(doctor.getId()));
     }
 
+    private Department createDepartment(){
+        Department department = new Department();
+        department.setId(10L);
+        department.setName("Pediatrie");
+
+        return department;
+    }
+
     private Doctor createDoctor() {
         User user = new User();
         user.setUsername("test-username");
@@ -110,6 +143,15 @@ public class DoctorServiceTest {
         doctor.setUser(user);
 
         return doctor;
+    }
+
+    private Doctor createPersistedDoctor2(Role role, Department department) {
+        Doctor patient = createDoctor();
+        patient.setDepartment(department);
+        patient.setId(1L);
+        patient.getUser().setPassword(ENCODED_PASS);
+        patient.getUser().getRoles().add(role);
+        return patient;
     }
 
     private Doctor createPersistedDoctor(Role role) {

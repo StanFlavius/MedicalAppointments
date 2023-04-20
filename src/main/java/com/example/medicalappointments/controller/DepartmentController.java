@@ -3,6 +3,8 @@ package com.example.medicalappointments.controller;
 import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.model.Department;
 import com.example.medicalappointments.service.DepartmentServiceImpl;
+import com.example.medicalappointments.service.DoctorService;
+import com.example.medicalappointments.service.MedicalProcedureService;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +28,16 @@ public class DepartmentController {
 
     public final static String ALL_DEPARTMENTS = "departments";
     private final static String ADD_EDIT_DEPARTMENT = "department_form";
+    public final static String VIEW_DEPARTMENT = "department_info";
 
     @Autowired
     private DepartmentServiceImpl departmentService;
+
+    @Autowired
+    private DoctorService doctorService;
+
+    @Autowired
+    private MedicalProcedureService medicalProcedureService;
 
     @GetMapping()
     public String getAll(Model model) {
@@ -42,6 +51,19 @@ public class DepartmentController {
             model.addAttribute("department", new Department());
         }
         return ADD_EDIT_DEPARTMENT;
+    }
+
+    @GetMapping("/{id}")
+    public String getById(@PathVariable("id") String departmentId, Model model){
+        var department = departmentService.getDepartmentById(Long.valueOf(departmentId));
+        model.addAttribute("department", department);
+
+        var doctors = doctorService.getDoctorsByDepartment(Long.valueOf(departmentId));
+        model.addAttribute("doctors", doctors);
+
+        var procedures = medicalProcedureService.getProceduresByDepartment(Long.valueOf(departmentId));
+        model.addAttribute("procedures", procedures);
+        return VIEW_DEPARTMENT;
     }
 
     @GetMapping("/{id}/edit")

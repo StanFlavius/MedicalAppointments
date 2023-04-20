@@ -43,11 +43,29 @@ public class DoctorControllerTest {
     }
 
     @Test
+    @WithAnonymousUser
+    public void showDoctors_unauthenticated_user_success() throws Exception {
+        mockMvc.perform(get("/doctors"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("doctors"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
     @WithMockUser(username = "patient_1", password = "123456", roles = "PATIENT")
     public void showDoctors_patient_success() throws Exception {
         mockMvc.perform(get("/doctors"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("doctors"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithAnonymousUser
+    public void showDoctorInfo_unauthenticated_user_success() throws Exception {
+        mockMvc.perform(get("/doctors/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("doctor_info"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"));
     }
 
