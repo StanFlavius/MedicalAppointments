@@ -137,7 +137,7 @@ public class DoctorServiceTest {
         user.setLastName("testln");
 
         Doctor doctor = new Doctor();
-        doctor.setInterese("testi");
+        doctor.setInterests("testi");
         doctor.setMemberIn("testmi");
         doctor.setSkill("tests");
         doctor.setUser(user);

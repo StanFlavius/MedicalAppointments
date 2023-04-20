@@ -20,7 +20,7 @@ public class Doctor {
 
     private String skill;
 
-    private String interese;
+    private String interests;
 
     private String memberIn;
 

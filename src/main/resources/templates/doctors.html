@@ -19,6 +19,7 @@
             <th>Last name</th>
             <th>Department</th>
             <th>Details</th>
+            <th sec:authorize="hasRole('ADMIN')">Edit</th>
             <th sec:authorize="hasRole('ADMIN')">Delete</th>
         </tr>
         </thead>
@@ -31,6 +32,11 @@
             <td>
                 <a href="#" th:href="@{'/doctors/{id}'(id=${doctor.id})}">
                     <button class="btn btn-secondary">Details</button>
+                </a>
+            </td>
+            <td sec:authorize="hasRole('ADMIN')">
+                <a href="#" th:href="@{'/doctors/{id}/edit'(id=${doctor.id})}">
+                    <button class="btn btn-secondary">Edit</button>
                 </a>
             </td>
             <td sec:authorize="hasRole('ADMIN')">
