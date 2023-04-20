@@ -13,6 +13,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,6 +34,17 @@ public class MedicationControllerTest {
     @Autowired
     private MedicationService medicationService;
 
+    @Test
+    @WithMockUser(username = "admin_1", roles={"ADMIN"})
+    void getAllByAdminUser_success() throws Exception {
+        Medication medication = new Medication();
+        medication.setName("Cerebrozyl");
+        medication.setQuantity(400);
+
+        mockMvc.perform(get("/medications")
+                        .flashAttr("medication", Collections.singletonList(medication)))
+                .andExpect(status().isOk());
+    }
     @Test
     @WithMockUser(username = "admin_1", password = "123456", roles={"ADMIN"})
     void showConsultFormPage_patient_success() throws Exception {

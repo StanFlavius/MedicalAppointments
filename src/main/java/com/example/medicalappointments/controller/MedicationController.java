@@ -26,6 +26,13 @@ public class MedicationController {
 
     private final MedicationService medicationService;
 
+    @GetMapping
+    public String getAll(Model model) {
+        var medications = medicationService.getAllMedications();
+        model.addAttribute("medications", medications);
+        return ALL_MEDICATIONS;
+    }
+
     @GetMapping("/new")
     public String addMedication(Model model) {
         if (!model.containsAttribute("medication")) {
