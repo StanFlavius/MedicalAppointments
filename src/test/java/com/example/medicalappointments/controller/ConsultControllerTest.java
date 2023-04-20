@@ -13,6 +13,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -72,13 +73,31 @@ class ConsultControllerTest {
                 .andExpect(redirectedUrl("/consults/new"));
     }
 
+    @Test
+    @WithMockUser(username = "pacient_1", password = "123456", roles={"PATIENT"})
+    void createConsult_dateNotInWorkingHours_patient_failure() throws Exception {
+        Consult consult = createConsult();
+        consult.getDate().setHours(22);
+
+        mockMvc.perform(post("/consults")
+                        .flashAttr("consult", consult))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/consults/new"));
+    }
+
     private Consult createConsult() {
         Doctor doctor = new Doctor();
         doctor.setId(1L);
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 1);
+        Date date = calendar.getTime();
+        date.setHours(18);
+
         Consult consult = new Consult();
         consult.setDoctor(doctor);
-        consult.setDate(new Date(System.currentTimeMillis() + 99999));
+        consult.setDate(date);
 
         return consult;
     }

@@ -31,20 +31,17 @@ public class ConsultService {
         return consultRepository.save(consult);
     }
 
-    private Boolean validateConsult(Consult consult) {
+    private void validateConsult(Consult consult) {
         Date date = consult.getDate();
         Date start = setHour(date, 8);
         Date end = setHour(date, 18);
 
-        if(date.before(start) || date.after(end)) {
+        if (date.before(start) || date.after(end)) {
             throw new CustomException("The time must be in the working hours!");
         }
-
-        if(consultRepository.findConsultInTimeRange(addHours(date, -1), addHours(date, 1), consult.getDoctor()).isPresent()) {
+        if (!consultRepository.findConsultsInTimeRange(addHours(date, -1), addHours(date, 1), consult.getDoctor()).isEmpty()) {
             throw new CustomException("There is already an appointment at this time, please try something else.");
         }
-
-        return true;
     }
 
     private Date addHours(Date date, int hours) {

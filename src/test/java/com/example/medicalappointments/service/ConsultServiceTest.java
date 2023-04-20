@@ -9,10 +9,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,6 +41,7 @@ class ConsultServiceTest {
 
         when(userService.getCurrentUser()).thenReturn(persistedPatient.getUser());
         when(patientService.findByUserId(persistedPatient.getUser().getId())).thenReturn(persistedPatient);
+        when(consultRepository.findConsultsInTimeRange(any(), any(), any())).thenReturn(Collections.emptyList());
         when(consultRepository.save(consult)).thenReturn(persistedConsult);
 
         Consult resultedConsult = consultService.saveConsult(consult);
@@ -56,9 +60,32 @@ class ConsultServiceTest {
         assertThrows(CustomException.class, () -> consultService.saveConsult(consult));
     }
 
+    @Test
+    void createConsult_dateOverlapsWithOtherConsults_exception() {
+        Consult consult = createConsult();
+
+        when(consultRepository.findConsultsInTimeRange(any(), any(), any())).thenReturn(Collections.singletonList(new Consult()));
+
+        assertThrows(CustomException.class, () -> consultService.saveConsult(consult));
+    }
+
+    @Test
+    void createConsult_dateNotInWorkingHours_exception() {
+        Consult consult = createConsult();
+        consult.getDate().setHours(22);
+
+        assertThrows(CustomException.class, () -> consultService.saveConsult(consult));
+    }
+
     private Consult createConsult() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 1);
+        Date date = calendar.getTime();
+        date.setHours(18);
+
         Consult consult = new Consult();
-        consult.setDate(new Date(System.currentTimeMillis() + 99999));
+        consult.setDate(date);
         consult.setDoctor(new Doctor());
         return consult;
     }
