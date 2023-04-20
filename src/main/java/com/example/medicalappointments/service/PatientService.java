@@ -1,5 +1,6 @@
 package com.example.medicalappointments.service;
 
+import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.exception.NotUniqueException;
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.User;
@@ -39,5 +40,12 @@ public class PatientService {
         }
 
         return patientRepository.save(patient);
+    }
+
+    public Patient findByUserId(Long userId) {
+        return patientRepository.findByUser_Id(userId)
+                .orElseThrow(() -> EntityNotFoundException.builder()
+                        .entityType("Patient")
+                        .build());
     }
 }

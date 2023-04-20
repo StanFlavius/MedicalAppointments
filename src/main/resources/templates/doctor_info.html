@@ -20,9 +20,15 @@
             <h1 class="panel-title" style="padding: 5px">Details</h1>
         </div>
 
-        <br>
+        <div class="container mt-3" sec:authorize="hasRole('PATIENT')">
+            <div class="row">
+                <form th:action="@{/consults/new}" th:method="GET" >
+                    <button th:name="doctor" th:value="${doctor.id}" class="btn btn-primary" type="submit">Add consult</button>
+                </form>
+            </div>
+        </div>
 
-        <div class="panel-body">
+        <div class="panel-body mt-3">
 
             <div class="container">
                 <div class="row">
@@ -65,6 +71,11 @@
                             <label>Member in:</label>
                             <input type="text" disabled class="form-control" th:field="${doctor.memberIn}"/>
                         </div>
+
+                        <div style="margin-top: 15px">
+                            <label>Department:</label>
+                            <input type="text" disabled class="form-control" th:field="${doctor.department.name}"/>
+                        </div>
                     </div>
 
                     <div class="col col-md-9">
@@ -84,7 +95,7 @@
                                 <td th:text="${consult.id}"></td>
                                 <td th:text="|${consult.patient.user.lastName} ${consult.patient.user.firstName}|"></td>
                                 <td th:text="${doctor.department.name}"></td>
-                                <td th:text="${T(com.example.project.service.Helper).formatDate(consult.date)}"></td>
+                                <td th:text="${T(com.example.medicalappointments.service.Helper).formatDate(consult.date)}"></td>
                                 <td>
                                     <a class="btn btn-secondary" th:href="@{'/consults/{id}'(id=${consult.id})}"
                                        role="button" href="#">
@@ -105,13 +116,6 @@
                                 </td>
                             </tr>
                         </table>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-3">
-                        <label class="col-form-label">Department:</label>
-                        <input type="text" disabled class="form-control" th:field="${doctor.department.name}"/>
                     </div>
                 </div>
             </div>

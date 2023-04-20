@@ -27,8 +27,9 @@ public class UserService implements UserDetailsService {
     public UserDetails getCurrentUserPrincipal() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+
         if (!(principal instanceof UserDetails)) {
-            throw EntityNotFoundException.builder().entityId(null).entityType("User").build();
+            return null;
         }
         return (UserDetails) principal;
     }
@@ -48,9 +49,9 @@ public class UserService implements UserDetailsService {
         User user = userRepository.getUserByUsername(username).orElseThrow(() ->
                 new UsernameNotFoundException("Username: " + username));
 
-        log.info("Loaded user: {}", user.getEmail());
+        log.info("Loaded user: {}", user.getUsername());
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),
+        return new org.springframework.security.core.userdetails.User(user.getUsername(),
                 user.getPassword(), user.getEnabled(), user.getAccountNotExpired(),
                 user.getCredentialsNotExpired(), user.getAccountNotLocked(), getAuthorities(user.getAuthorities()));
     }
