@@ -4,6 +4,7 @@ import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.model.Consult;
 import com.example.medicalappointments.model.Department;
 import com.example.medicalappointments.model.Doctor;
+import com.example.medicalappointments.model.Medication;
 import com.example.medicalappointments.service.ConsultService;
 import com.example.medicalappointments.service.DoctorService;
 import com.example.medicalappointments.service.interfaces.DepartmentService;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.medicalappointments.controller.DepartmentController.BINDING_RESULT_PATH;
 import static com.example.medicalappointments.controller.DepartmentController.REDIRECT;
+import static java.util.stream.Collectors.toList;
 
 @Controller
 @RequestMapping("/consults")
@@ -29,6 +32,7 @@ import static com.example.medicalappointments.controller.DepartmentController.RE
 public class ConsultController {
 
     private final static String ALL_CONSULTS = "consults";
+    private final static String VIEW_CONSULT = "consult_info";
 
     private final DepartmentService departmentService;
     private final DoctorService doctorService;
@@ -74,7 +78,7 @@ public class ConsultController {
                                 .id(doc.getDepartment().getId())
                                 .build())
                         .build())
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @PostMapping
@@ -106,7 +110,38 @@ public class ConsultController {
     }
 
     @GetMapping
-    public String getConsults() {
-        return "consults";
+    public String getAll(Model model) {
+        List<Consult> consults = consultService.getAllConsults();
+        List<Consult> futureConsults = consults.stream()
+                .filter(consult -> consult.getDate().after(new Date(System.currentTimeMillis())))
+                .collect(toList());
+        List<Consult> pastConsults = consults.stream()
+                .filter(consult -> consult.getDate().before(new Date(System.currentTimeMillis())))
+                .collect(toList());
+        model.addAttribute("futureConsults", futureConsults);
+        model.addAttribute("pastConsults", pastConsults);
+        return ALL_CONSULTS;
+    }
+
+    @GetMapping("/{id}")
+    public String getById(@PathVariable("id") String consultId, Model model) {
+        var consult = consultService.getConsultById(Long.valueOf(consultId));
+        var selectedMedicationIds = consult.getMedications().stream().map(Medication::getId).collect(toList());
+        var medications = consult.getMedications().stream()
+                .sorted(Comparator.comparing(Medication::getName).thenComparing(Medication::getQuantity))
+                .collect(toList());
+        var doctor = consult.getDoctor();
+        var patient = consult.getPatient();
+
+        var doctorName = doctor.getUser().getLastName() + " " + doctor.getUser().getFirstName();
+        var patientName = patient.getUser().getLastName() + " " + patient.getUser().getFirstName();
+
+        model.addAttribute("consult", consult);
+        model.addAttribute("doctorName", doctorName);
+        model.addAttribute("patientName", patientName);
+        model.addAttribute("medicationAll", medications);
+        model.addAttribute("selectedMedicationIds", selectedMedicationIds);
+
+        return VIEW_CONSULT;
     }
 }

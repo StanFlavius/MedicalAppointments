@@ -2,13 +2,10 @@ package com.example.medicalappointments.controller;
 
 import com.example.medicalappointments.model.Consult;
 import com.example.medicalappointments.model.Doctor;
-import com.example.medicalappointments.model.Patient;
-import com.example.medicalappointments.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -83,6 +79,33 @@ class ConsultControllerTest {
                         .flashAttr("consult", consult))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/consults/new"));
+    }
+
+    @Test
+    @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
+    public void showConsults_patient_success() throws Exception {
+        mockMvc.perform(get("/consults"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("consults"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
+    public void showConsultInfo_patient_success() throws Exception {
+        mockMvc.perform(get("/consults/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("consult_info"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
+    public void showConsultInfo_doctorNotFound_patient_error() throws Exception {
+        mockMvc.perform(get("/consults/{1}", "999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("err_not_found"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
     }
 
     private Consult createConsult() {

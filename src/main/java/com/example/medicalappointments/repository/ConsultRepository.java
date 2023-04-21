@@ -15,4 +15,6 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
 
     @Query(value = "SELECT c FROM Consult c where c.doctor = :doctor AND c.date BETWEEN :dateStart AND :dateEnd")
     List<Consult> findConsultsInTimeRange(@Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd, @Param("doctor") Doctor doctor);
+
+    List<Consult> findAllByPatient_Id(Long patientId);
 }
