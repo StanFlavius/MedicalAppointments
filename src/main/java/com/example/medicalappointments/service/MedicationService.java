@@ -37,6 +37,10 @@ public class MedicationService {
                 );
     }
 
+    public List<Medication> findMedicationsByIdContains(List<Long> ids) {
+        return medicationRepository.findByIdIsIn(ids);
+    }
+
     private void checkIfMedicationAlreadyExistsByNameAndQuantity(String name, Integer quantity) {
         if (medicationRepository.findMedicationByNameAndQuantity(name, quantity).isPresent()) {
             throw new CustomException(String.format("Medication %s with quantity %s already exists!", name, quantity));

@@ -38,7 +38,6 @@ public class Consult {
     @Length(min = 5, message = "Please enter at least 5 characters!")
     private String comment;
 
-    @NotNull(message = "A doctor must be selected!")
     @ManyToOne
     @JoinColumn(name = "FK_DOCTOR_ID")
     private Doctor doctor;

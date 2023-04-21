@@ -3,7 +3,9 @@ package com.example.medicalappointments.service;
 import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.model.Consult;
+import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.Patient;
+import com.example.medicalappointments.model.User;
 import com.example.medicalappointments.repository.ConsultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,9 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
+import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
+
 @Service
 @RequiredArgsConstructor
 public class ConsultService {
@@ -19,14 +24,21 @@ public class ConsultService {
     private final ConsultRepository consultRepository;
     private final UserService userService;
     private final PatientService patientService;
+    private final DoctorService doctorService;
 
     public Consult saveConsult(Consult consult) {
         if (consult.getDate().before(new Date())) {
             throw new CustomException("Date must be in the future!");
         }
         validateConsult(consult);
-        Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
-        consult.setPatient(patient);
+
+        if (userService.hasRole(ROLE_DOCTOR)) {
+            Doctor doctor = doctorService.findByUserId(userService.getCurrentUser().getId());
+            consult.setDoctor(doctor);
+        } else if (userService.hasRole(ROLE_PATIENT)) {
+            Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
+            consult.setPatient(patient);
+        }
 
         return consultRepository.save(consult);
     }

@@ -42,7 +42,7 @@
             <div class="panel-body">
 
                 <div class="row col-md-8">
-                    <div class="col-md-4">
+                    <div class="col-md-4" sec:authorize="hasRole('PATIENT')">
                         <label class="col-form-label">Department:</label>
                         <select th:id="'department'" class="form-control" th:field="*{doctor.department.id}" onclick="updateDoctorsVisibility()" />
                             <option th:disabled="true" th:selected="*{doctor.department.id == null}" th:value="null"> -- Select a department -- </option>
@@ -55,7 +55,7 @@
                         </select>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-4" sec:authorize="hasRole('PATIENT')">
                         <label class="col-form-label">Doctor:</label>
                         <select th:disabled="*{doctor.department.id == null}" th:id="'doctor'" class="form-control" th:field="*{doctor.id}" />
                             <option th:selected="*{doctor.id == null}" disabled th:id="'defaultDoc'" th:value="null"> -- Select a doctor -- </option>
@@ -72,6 +72,22 @@
                         </label>
                         <label th:if="${error_doctor} != null" class="error text-danger"
                                th:text="${error_doctor}"></label>
+                    </div>
+
+                    <div class="col-md-4" sec:authorize="hasRole('DOCTOR')">
+                        <label class="col-form-label">Patient:</label>
+                        <select class="form-control" th:field="*{patient.id}">
+                            <option th:each="patient : ${allPatients}"
+                                    th:value="${patient.id}"
+                                    th:utext="|${patient.user.lastName} ${patient.user.firstName}|">
+                            </option>
+                        </select>
+                        <label th:if="${#fields.hasErrors('patient')}" th:errors="*{patient}" type="error"
+                               class="error text-danger">
+                            Error
+                        </label>
+                        <label th:if="${error_patient} != null" class="error text-danger"
+                               th:text="${error_patient}"></label>
                     </div>
 
                     <div class="col-md-4">

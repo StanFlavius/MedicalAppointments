@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
+import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,17 +29,23 @@ class ConsultServiceTest {
     private PatientService patientService;
 
     @Mock
+    private DoctorService doctorService;
+
+    @Mock
     private UserService userService;
 
     @InjectMocks
     private ConsultService consultService;
 
     @Test
-    void createConsult_success() {
+    void createConsult_patient_success() {
         Consult consult = createConsult();
         Patient persistedPatient = createPersistedPatient();
-        Consult persistedConsult = createPersistedConsult(persistedPatient);
+        Consult persistedConsult = createPersistedConsult();
+        persistedConsult.setPatient(persistedPatient);
 
+        when(userService.hasRole(ROLE_DOCTOR)).thenReturn(false);
+        when(userService.hasRole(ROLE_PATIENT)).thenReturn(true);
         when(userService.getCurrentUser()).thenReturn(persistedPatient.getUser());
         when(patientService.findByUserId(persistedPatient.getUser().getId())).thenReturn(persistedPatient);
         when(consultRepository.findConsultsInTimeRange(any(), any(), any())).thenReturn(Collections.emptyList());
@@ -48,6 +55,27 @@ class ConsultServiceTest {
 
         assertEquals(persistedConsult.getId(), resultedConsult.getId());
         assertEquals(persistedPatient, consult.getPatient());
+
+        verify(consultRepository, times(1)).save(consult);
+    }
+
+    @Test
+    void createConsult_doctor_success() {
+        Consult consult = createConsult();
+        Doctor persistedDoctor = createPersistedDoctor();
+        Consult persistedConsult = createPersistedConsult();
+        persistedConsult.setDoctor(persistedDoctor);
+
+        when(userService.hasRole(ROLE_DOCTOR)).thenReturn(true);
+        when(userService.getCurrentUser()).thenReturn(persistedDoctor.getUser());
+        when(doctorService.findByUserId(persistedDoctor.getUser().getId())).thenReturn(persistedDoctor);
+        when(consultRepository.findConsultsInTimeRange(any(), any(), any())).thenReturn(Collections.emptyList());
+        when(consultRepository.save(consult)).thenReturn(persistedConsult);
+
+        Consult resultedConsult = consultService.saveConsult(consult);
+
+        assertEquals(persistedConsult.getId(), resultedConsult.getId());
+        assertEquals(persistedDoctor, consult.getDoctor());
 
         verify(consultRepository, times(1)).save(consult);
     }
@@ -90,9 +118,9 @@ class ConsultServiceTest {
         return consult;
     }
 
-    private Consult createPersistedConsult(Patient patient) {
+    private Consult createPersistedConsult() {
         Consult consult = createConsult();
-        consult.setPatient(patient);
+        consult.setId(1L);
         return consult;
     }
 
@@ -106,6 +134,25 @@ class ConsultServiceTest {
         patient.setUser(user);
 
         return patient;
+    }
+
+    private Doctor createPersistedDoctor() {
+        User user = new User();
+        user.setUsername("test-username");
+        user.setPassword("test-pass");
+
+        Doctor doctor = new Doctor();
+        doctor.setId(1L);
+        doctor.setUser(user);
+        doctor.getUser().getRoles().add(createDoctorRole());
+
+        return doctor;
+    }
+
+    private Role createDoctorRole() {
+        Role doctorRole = new Role();
+        doctorRole.setName(ROLE_DOCTOR);
+        return doctorRole;
     }
 
     private Role createPatientRole() {
