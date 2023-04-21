@@ -35,8 +35,8 @@
                 <th style="position: sticky; top: 0; background-color: white;">Date</a></th>
                 <th style="position: sticky; top: 0; background-color: white;">Diagnose</a></th>
                 <th style="position: sticky; top: 0; background-color: white;">Details</th>
-                <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasRole('ADMIN')">Edit</th>
-                <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasRole('PATIENT')">Delete</th>
+                <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasAnyRole('PATIENT', 'DOCTOR')">Edit</th>
+                <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasAnyRole('PATIENT', 'DOCTOR')">Delete</th>
             </tr>
             </thead>
             <tr th:each="consult: ${futureConsults}">
@@ -51,18 +51,16 @@
                         <button class="btn btn-secondary">Details</button>
                     </a>
                 </td>
-                <td sec:authorize="hasRole('ADMIN')">
-                    <a class="btn btn-secondary" href="#" th:href="@{/consults/{id}/edit(id=${consult.id})}"
+                <td sec:authorize="hasAnyRole('PATIENT', 'DOCTOR')">
+                    <a class="btn btn-success" href="#" th:href="@{/consults/{id}/edit(id=${consult.id})}"
                        role="button">
                         Edit
                     </a>
                 </td>
-                <td sec:authorize="hasRole('PATIENT')">
+                <td sec:authorize="hasAnyRole('PATIENT', 'DOCTOR')">
                     <form th:object="${consult}" th:action="@{/consults/{id}/delete(id=${consult.id})}"
                           th:method="GET">
-                        <button class="btn btn-secondary">Delete</button>
-                        <label th:if="${error_delete_consult} != null" class="error text-danger"
-                               th:text="${error_delete_consult}"></label>
+                        <button class="btn btn-danger">Delete</button>
                     </form>
                 </td>
             </tr>
@@ -83,8 +81,7 @@
                     <th style="position: sticky; top: 0; background-color: white;">Date</a></th>
                     <th style="position: sticky; top: 0; background-color: white;">Diagnose</a></th>
                     <th style="position: sticky; top: 0; background-color: white;">Details</th>
-                    <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasRole('ADMIN')">Edit</th>
-                    <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasRole('PATIENT')">Delete</th>
+                    <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasAnyRole('PATIENT', 'DOCTOR')">Edit</th>
                 </tr>
             </thead>
             <tr th:each="consult: ${pastConsults}">
@@ -99,17 +96,11 @@
                         <button class="btn btn-secondary">Details</button>
                     </a>
                 </td>
-                <td sec:authorize="hasRole('ADMIN')">
-                    <a class="btn btn-secondary" href="#" th:href="@{/consults/{id}/edit(id=${consult.id})}"
+                <td sec:authorize="hasAnyRole('PATIENT','DOCTOR')">
+                    <a class="btn btn-success" href="#" th:href="@{/consults/{id}/edit(id=${consult.id})}"
                        role="button">
                         Edit
                     </a>
-                </td>
-                <td sec:authorize="hasRole('PATIENT')">
-                    <form th:object="${consult}" th:action="@{/consults/{id}/delete(id=${consult.id})}"
-                          th:method="GET">
-                        <button class="btn btn-secondary">Delete</button>
-                    </form>
                 </td>
             </tr>
         </table>
