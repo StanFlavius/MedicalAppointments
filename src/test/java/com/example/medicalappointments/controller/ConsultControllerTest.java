@@ -109,6 +109,33 @@ class ConsultControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void showConsults_admin_success() throws Exception {
+        mockMvc.perform(get("/consults"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("consults"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void showConsultInfo_admin_success() throws Exception {
+        mockMvc.perform(get("/consults/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("consult_info"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void showConsultInfo_consultNotFound_admin_error() throws Exception {
+        mockMvc.perform(get("/consults/{1}", "999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("err_not_found"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
     @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
     public void deleteConsult_patient_success() throws Exception {
         mockMvc.perform(get("/consults/{1}/delete", "2"))

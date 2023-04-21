@@ -13,7 +13,7 @@
 
 <div class="container">
 
-    <div sec:authorize="hasAnyRole('ADMIN', 'DOCTOR', 'PATIENT')" class="container mt-3">
+    <div sec:authorize="hasAnyRole('DOCTOR', 'PATIENT')" class="container mt-3">
         <div class="row">
             <div class="col-md-6">
                 <a class="btn btn-primary" role="button" th:href="@{'/consults/new'}" th:method="POST">Add consult</a>

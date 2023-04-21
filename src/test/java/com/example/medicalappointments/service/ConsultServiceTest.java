@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
+import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_ADMIN;
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -90,6 +91,27 @@ class ConsultServiceTest {
         assertEquals(resultedConsults.get(0).getId(), consult.getId());
         assertEquals(resultedConsults.get(0).getPatient(), patient);
         assertTrue(resultedConsults.get(0).getPatient().getUser().getRoles().containsAll(patient.getUser().getRoles()));
+
+        verify(consultRepository, times(1)).findAllByPatient_Id(patient.getId());
+        verify(consultRepository, never()).findAll();
+    }
+
+    @Test
+    void getAllConsults_admin_success() {
+        Patient patient = createPersistedPatient();
+        Consult consult = createPersistedConsult(patient);
+
+        when(userService.getCurrentUser()).thenReturn(User.builder().roles(Set.of(createAdminRole())).build());
+        when(consultRepository.findAll()).thenReturn(List.of(consult));
+
+        List<Consult> resultedConsults = consultService.getAllConsults();
+
+        assertEquals(1, resultedConsults.size());
+        assertEquals(resultedConsults.get(0).getId(), consult.getId());
+        assertEquals(resultedConsults.get(0).getPatient(), patient);
+
+        verify(consultRepository, never()).findAllByPatient_Id(any());
+        verify(consultRepository, times(1)).findAll();
     }
 
     @Test
@@ -173,6 +195,12 @@ class ConsultServiceTest {
         Role patientRole = new Role();
         patientRole.setName(ROLE_PATIENT);
         return patientRole;
+    }
+
+    private Role createAdminRole() {
+        Role adminRole = new Role();
+        adminRole.setName(ROLE_ADMIN);
+        return adminRole;
     }
 
     private Patient createPersistedPatient() {
