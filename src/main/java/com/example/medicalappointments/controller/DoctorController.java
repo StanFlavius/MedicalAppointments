@@ -86,6 +86,6 @@ public class DoctorController {
     @GetMapping("/{id}/delete")
     public String deleteDoctor(@PathVariable Long id) {
         doctorService.deleteDoctorById(id);
-        return "redirect:/" + ALL_DOCTORS;
+        return REDIRECT + ALL_DOCTORS;
     }
 }

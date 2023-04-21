@@ -116,6 +116,28 @@ class ConsultServiceTest {
         assertThrows(EntityNotFoundException.class, () -> consultService.getConsultById(nonexistentConsultId));
     }
 
+    @Test
+    public void deleteConsult_success() {
+        Patient patient = createPersistedPatient();
+        Consult consult = createPersistedConsult(patient);
+
+        when(consultRepository.findById(consult.getId())).thenReturn(Optional.of(consult));
+        doNothing().when(consultRepository).delete(consult);
+
+        consultService.deleteConsultById(consult.getId());
+
+        verify(consultRepository, times(1)).delete(consult);
+    }
+
+    @Test
+    public void deleteConsult_consultNotFound_exception() {
+        Long nonexistentConsultId = 1L;
+
+        when(consultRepository.findById(nonexistentConsultId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> consultService.deleteConsultById(nonexistentConsultId));
+    }
+
     private Consult createConsult() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());

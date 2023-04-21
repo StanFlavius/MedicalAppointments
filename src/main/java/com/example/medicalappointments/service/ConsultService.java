@@ -53,6 +53,14 @@ public class ConsultService {
                         .build());
     }
 
+    public void deleteConsultById(Long id) {
+        Consult consult = getConsultById(id);
+        if (consult.getDate().before(new Date())) {
+            throw new CustomException("You cannot delete a past consult!");
+        }
+        consultRepository.delete(consult);
+    }
+
     private void validateConsult(Consult consult) {
         Date date = consult.getDate();
         Date start = setHour(date, 8);
