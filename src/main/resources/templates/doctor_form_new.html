@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.1.3/css/bootstrap.min.css"/>
+    <script src="/webjars/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+<div th:insert="navbar :: navbar">  </div>
+
+<div class="container col-md-10 col-md-offset-10">
+    <div class="mt-5 mb-5 text-center">
+        <h1>Register now!</h1>
+    </div>
+
+    <form th:action="@{/doctors/new}" class="form-group align-content-lg-start p-3" method="post">
+        <div class="container">
+
+            <div class="row row justify-content-md-center">
+                <div class="col-md-3" style="text-align:center">
+                    <h5>Account details</h5>
+                </div>
+                <div class="col-md-3" style="margin-left: 60px; text-align:center">
+                    <h5>Doctor details</h5>
+                </div>
+            </div>
+
+            <div class="row row justify-content-md-center">
+                <div class="col-md-3">
+                    <label>Username:</label>
+                    <input type="text" name="username" class="form-control" th:value="${user.username}"
+                           placeholder="Username"/>
+                    <label th:if="${#fields.hasErrors('user.username')}" th:errors="${user.username}" type="error"
+                           class="error text-danger">
+                        Error
+                    </label>
+                    <label th:if="${error_username} != null" class="error text-danger"
+                           th:text="${error_username}"></label>
+                </div>
+
+                <div class="col-md-3" style="margin-left: 60px">
+                    <label>Last name:</label>
+                    <input type="text" name="lastName" class="form-control" th:field="${user.lastName}"
+                           placeholder="Last name"/>
+                    <label th:if="${#fields.hasErrors('user.lastName')}" th:errors="${user.lastName}" type="error"
+                           class="error text-danger">
+                        Error
+                    </label>
+                </div>
+            </div>
+
+            <div class="row row justify-content-md-center">
+                <div class="col-md-3">
+                    <label>Email:</label>
+                    <input type="text" name="email" class="form-control" th:value="${user.email}"
+                           placeholder="Email"/>
+                    <label th:if="${#fields.hasErrors('user.email')}" th:errors="${user.email}" type="error"
+                           class="error text-danger">
+                        Error
+                    </label>
+                    <label th:if="${error_email} != null" class="error text-danger"
+                           th:text="${error_email}"></label>
+                </div>
+
+                <div class="col-md-3" style="margin-left: 60px">
+                    <label>First name:</label>
+                    <input type="text" name="firstName" class="form-control" th:field="${user.firstName}"
+                           placeholder="First name"/>
+                    <label th:if="${#fields.hasErrors('user.firstName')}" th:errors="${user.firstName}"
+                           type="error"
+                           class="error text-danger">
+                        Error
+                    </label>
+                </div>
+            </div>
+
+            <div class="row row justify-content-md-center">
+                <div class="col-md-3">
+                    <label>Password:</label>
+                    <input type="password" name="password" class="form-control" th:value="*{password}"
+                           placeholder="Password"/>
+                    <label th:if="${#fields.hasErrors('password')}" th:errors="*{password}" type="error"
+                           class="error text-danger">
+                        Error
+                    </label>
+                    <label th:if="${error_password} != null" class="error text-danger"
+                           th:text="${error_password}"></label>
+                </div>
+
+
+                <div class="col-md-3" style="margin-left: 60px">
+                    <label>Department</label>
+                    <select class="form-control" th:field="*{doctor.department.id}">
+                        <option th:each="dept : ${departmentAll}"
+                                th:value="${dept.id}"
+                                th:utext="${dept.name}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row row justify-content-md-center">
+                <div class="col-md-3">
+                    <label>Areas of interest:</label>
+                    <input type="text" name="areasOfInterest" class="form-control"
+                           th:field="${doctor.interests}"
+                           placeholder="Areas of interest:"/>
+                    <label th:if="${#fields.hasErrors('doctor.interests')}" th:errors="${doctor.interests}"
+                           type="error"
+                           class="error text-danger">
+                        Error
+                    </label>
+                </div>
+
+                <div class="col-md-3" style="margin-left: 60px">
+                    <label>Competences:</label>
+                    <input type="text" name="skill" class="form-control"
+                           th:field="*{doctor.skill}"
+                           placeholder="Areas of interest:"/>
+                    <label th:if="${#fields.hasErrors('doctor.skill')}" th:errors="*{doctor.skill}"
+                           type="error"
+                           class="error text-danger">
+                        Error
+                    </label>
+                </div>
+            </div>
+
+            <div class="row row justify-content-md-center">
+                <div class="col-md-3" style="margin-left: 60px">
+                    <label>Member in:</label>
+                    <input type="text" name="memberIn" class="form-control" th:field="*{doctor.memberIn}"
+                           placeholder="Member in:"/>
+                    <label th:if="${#fields.hasErrors('doctor.memberIn')}" th:errors="*{doctor.memberIn}"
+                           type="error"
+                           class="error text-danger">
+                        Error
+                    </label>
+                </div>
+            </div>
+
+
+
+            <div class="row row justify-content-md-center">
+                <div class="col-md-1" style="margin-top:30px">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

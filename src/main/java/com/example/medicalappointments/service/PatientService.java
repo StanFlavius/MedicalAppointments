@@ -27,11 +27,6 @@ public class PatientService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final PatientRepository patientRepository;
-    private final UserRepository userRepository;
-
-    public List<Patient> getAllPatients() {
-        return patientRepository.findAll();
-    }
 
     public Patient findById(Long id){
         return patientRepository.findById(id)
