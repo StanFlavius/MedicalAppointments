@@ -54,6 +54,10 @@ public class ConsultService {
         return consultRepository.findAll();
     }
 
+    public List<Consult> getConsultsByPatientId(Long patientId){
+        return consultRepository.findAllByPatient_Id(patientId);
+    }
+
     public Consult getConsultById(Long id) {
         return consultRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.builder()

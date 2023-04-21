@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 import static com.example.medicalappointments.exception.NotUniqueException.ConflictingField.*;
@@ -32,6 +33,13 @@ public class PatientService {
         return patientRepository.findAll();
     }
 
+    public Patient findById(Long id){
+        return patientRepository.findById(id)
+                .orElseThrow(() -> EntityNotFoundException.builder()
+                        .entityId(id)
+                        .entityType("Patient")
+                        .build());
+    }
     public Patient createPatient(Patient patient) {
         User user = patient.getUser();
         user.setRoles(Collections.singleton(roleService.getRoleByName(ROLE_PATIENT)));

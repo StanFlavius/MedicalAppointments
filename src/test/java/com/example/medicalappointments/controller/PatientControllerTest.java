@@ -34,6 +34,15 @@ class PatientControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void showPatientInfo_admin_success() throws Exception {
+        mockMvc.perform(get("/patients/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("patient_info"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
     @WithAnonymousUser
     void showRegisterPage_success() throws Exception {
         mockMvc.perform(get("/register"))
