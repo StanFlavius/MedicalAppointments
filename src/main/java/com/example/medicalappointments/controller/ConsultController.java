@@ -144,4 +144,14 @@ public class ConsultController {
 
         return VIEW_CONSULT;
     }
+
+    @GetMapping("/{id}/delete")
+    public String deleteConsult(@PathVariable Long id, RedirectAttributes attr) {
+        try {
+            consultService.deleteConsultById(id);
+        } catch (CustomException e) {
+            attr.addFlashAttribute("error_delete_consult", e.getMessage());
+        }
+        return REDIRECT + ALL_CONSULTS;
+    }
 }
