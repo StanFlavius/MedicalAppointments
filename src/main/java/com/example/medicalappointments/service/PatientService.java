@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 import static com.example.medicalappointments.exception.NotUniqueException.ConflictingField.*;
@@ -40,6 +41,10 @@ public class PatientService {
         }
 
         return patientRepository.save(patient);
+    }
+
+    public List<Patient> getAllPatients() {
+        return patientRepository.findAll();
     }
 
     public Patient findByUserId(Long userId) {

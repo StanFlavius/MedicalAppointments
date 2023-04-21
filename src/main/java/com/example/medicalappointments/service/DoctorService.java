@@ -30,6 +30,13 @@ public class DoctorService {
                         .build());
     }
 
+    public Doctor findByUserId(Long userId) {
+        return doctorRepository.findByUser_Id(userId)
+                .orElseThrow(() -> EntityNotFoundException.builder()
+                        .entityType("Doctor")
+                        .build());
+    }
+
     public Doctor saveOrUpdateUser(Doctor doctor, User user) {
 
         Doctor doctorInDB = findById(doctor.getId());

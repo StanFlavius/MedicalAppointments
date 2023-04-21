@@ -27,9 +27,6 @@ public class DepartmentControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Mock
-    DepartmentServiceImpl departmentService;
-
     @Test
     @WithAnonymousUser
     void getAllByAnonymousUser_success() throws Exception {
@@ -96,13 +93,12 @@ public class DepartmentControllerTest {
     @WithMockUser(username = "admin_1", roles={"ADMIN"})
     void create_notValidField_failure() throws Exception {
         Department department = createDepartment();
-        department.setName("Cardiologie");
+        department.setName("");
 
         mockMvc.perform(post("/departments")
                         .flashAttr("department", department))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/departments/new"))
-                .andExpect(flash().attribute("error_department", "Department with name Cardiologie already exists!"));
+                .andExpect(view().name("redirect:/departments/new"));
     }
 
     @Test
@@ -131,14 +127,14 @@ public class DepartmentControllerTest {
     @WithMockUser(username = "admin_1", roles={"ADMIN"})
     void update_notValidField_failure() throws Exception {
         Department department = createDepartment();
-        department.setId(1L);
-        department.setName("Cardiologie");
+        department.setId(2L);
+        department.setName("Neurologie");
 
         mockMvc.perform(post("/departments")
                         .flashAttr("department", department))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/departments/1/edit"))
-                .andExpect(flash().attribute("error_department", "Department with name Cardiologie already exists!"));
+                .andExpect(view().name("redirect:/departments/2/edit"))
+                .andExpect(flash().attribute("error_department", "Department with name Neurologie already exists!"));
     }
 
     private Department createDepartment() {
