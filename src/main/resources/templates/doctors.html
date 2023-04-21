@@ -41,12 +41,12 @@
             </td>
             <td sec:authorize="hasRole('ADMIN')">
                 <a href="#" th:href="@{'/doctors/{id}/edit'(id=${doctor.id})}">
-                    <button class="btn btn-secondary">Edit</button>
+                    <button class="btn btn-success">Edit</button>
                 </a>
             </td>
             <td sec:authorize="hasRole('ADMIN')">
                 <form th:object="${doctor}" th:action="@{/doctors/{id}/delete(id=${doctor.id})}" th:method="GET">
-                    <button class="btn btn-secondary">Delete</button>
+                    <button class="btn btn-danger">Delete</button>
                 </form>
             </td>
         </tr>
