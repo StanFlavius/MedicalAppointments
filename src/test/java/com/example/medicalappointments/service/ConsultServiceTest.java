@@ -1,6 +1,7 @@
 package com.example.medicalappointments.service;
 
 import com.example.medicalappointments.exception.CustomException;
+import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.model.*;
 import com.example.medicalappointments.repository.ConsultRepository;
 import org.junit.jupiter.api.Test;
@@ -9,13 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +73,47 @@ class ConsultServiceTest {
         consult.getDate().setHours(22);
 
         assertThrows(CustomException.class, () -> consultService.saveConsult(consult));
+    }
+
+    @Test
+    void getAllConsults_patient_success() {
+        Patient patient = createPersistedPatient();
+        Consult consult = createPersistedConsult(patient);
+
+        when(userService.getCurrentUser()).thenReturn(User.builder().roles(patient.getUser().getRoles()).build());
+        when(patientService.findByUserId(userService.getCurrentUser().getId())).thenReturn(patient);
+        when(consultRepository.findAllByPatient_Id(patient.getId())).thenReturn(List.of(consult));
+
+        List<Consult> resultedConsults = consultService.getAllConsults();
+
+        assertEquals(1, resultedConsults.size());
+        assertEquals(resultedConsults.get(0).getId(), consult.getId());
+        assertEquals(resultedConsults.get(0).getPatient(), patient);
+        assertTrue(resultedConsults.get(0).getPatient().getUser().getRoles().containsAll(patient.getUser().getRoles()));
+    }
+
+    @Test
+    void getConsultById_success() {
+        Patient patient = createPersistedPatient();
+        Consult consult = createPersistedConsult(patient);
+
+        when(consultRepository.findById(consult.getId())).thenReturn(Optional.of(consult));
+
+        Consult resultedConsult = consultService.getConsultById(consult.getId());
+
+        assertEquals(resultedConsult.getId(), consult.getId());
+        assertEquals(resultedConsult.getPatient().getId(), patient.getId());
+
+        verify(consultRepository, times(1)).findById(consult.getId());
+    }
+
+    @Test
+    void getConsultById_consultNotFound_exception() {
+        Long nonexistentConsultId = 1L;
+
+        when(consultRepository.findById(nonexistentConsultId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> consultService.getConsultById(nonexistentConsultId));
     }
 
     private Consult createConsult() {

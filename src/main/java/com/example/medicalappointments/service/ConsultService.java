@@ -4,13 +4,18 @@ import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.model.Consult;
 import com.example.medicalappointments.model.Patient;
+import com.example.medicalappointments.model.Role;
 import com.example.medicalappointments.repository.ConsultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +34,23 @@ public class ConsultService {
         consult.setPatient(patient);
 
         return consultRepository.save(consult);
+    }
+
+    public List<Consult> getAllConsults() {
+        Set<String> roles = userService.getCurrentUser().getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+        if (roles.contains(ROLE_PATIENT)) {
+            Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
+            return consultRepository.findAllByPatient_Id(patient.getId());
+        }
+        return consultRepository.findAll();
+    }
+
+    public Consult getConsultById(Long id) {
+        return consultRepository.findById(id)
+                .orElseThrow(() -> EntityNotFoundException.builder()
+                        .entityId(id)
+                        .entityType("Consult")
+                        .build());
     }
 
     private void validateConsult(Consult consult) {

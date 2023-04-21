@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
+import java.util.Date;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.*;
 
@@ -26,6 +27,7 @@ public class DataLoader implements CommandLineRunner {
     private final PatientRepository patientRepository;
     private final DepartmentRepository departmentRepository;
     private final MedicationRepository medicationRepository;
+    private final ConsultRepository consultRepository;
     private final PasswordEncoder passwordEncoder;
     private final MedicalProcedureRepository medicalProcedureRepository;
 
@@ -230,6 +232,25 @@ public class DataLoader implements CommandLineRunner {
             medicationRepository.save(medication2);
             medicationRepository.save(medication3);
             medicationRepository.save(medication4);
+
+            Consult consult1 = Consult.builder()
+                    .patient(patient1)
+                    .doctor(doctor1)
+                    .date(new Date())
+                    .diagnose("Streptococ agravat")
+                    .symptoms("Durere in gat")
+                    .build();
+
+            Consult consult2 = Consult.builder()
+                    .patient(patient2)
+                    .doctor(doctor3)
+                    .date(new Date())
+                    .diagnose("Reumatism sever")
+                    .symptoms("Dureri articulare")
+                    .build();
+
+            consultRepository.save(consult1);
+            consultRepository.save(consult2);
         }
     }
 }

@@ -90,12 +90,11 @@ public class DoctorServiceTest {
 
     @Test
     public void getById_doctorNotFound_exception() {
-        Role doctorRole = createDoctorRole();
-        Doctor doctor = createPersistedDoctor(doctorRole);
+        Long nonexistentDoctorId = 1L;
+        
+        when(doctorRepository.findById(nonexistentDoctorId)).thenReturn(Optional.empty());
 
-        when(doctorRepository.findById(doctor.getId())).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () -> doctorService.findById(doctor.getId()));
+        assertThrows(EntityNotFoundException.class, () -> doctorService.findById(nonexistentDoctorId));
     }
 
     @Test
@@ -111,7 +110,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void removeDoctor_success_doctorNotFound_exception() {
+    public void removeDoctor_doctorNotFound_exception() {
         Role doctorRole = createDoctorRole();
         Doctor doctor = createPersistedDoctor(doctorRole);
 
@@ -146,26 +145,26 @@ public class DoctorServiceTest {
     }
 
     private Doctor createPersistedDoctor2(Role role, Department department) {
-        Doctor patient = createDoctor();
-        patient.setDepartment(department);
-        patient.setId(1L);
-        patient.getUser().setPassword(ENCODED_PASS);
-        patient.getUser().getRoles().add(role);
-        return patient;
+        Doctor doctor = createDoctor();
+        doctor.setDepartment(department);
+        doctor.setId(1L);
+        doctor.getUser().setPassword(ENCODED_PASS);
+        doctor.getUser().getRoles().add(role);
+        return doctor;
     }
 
     private Doctor createPersistedDoctor(Role role) {
-        Doctor patient = createDoctor();
-        patient.setId(1L);
-        patient.getUser().setPassword(ENCODED_PASS);
-        patient.getUser().getRoles().add(role);
-        return patient;
+        Doctor doctor = createDoctor();
+        doctor.setId(1L);
+        doctor.getUser().setPassword(ENCODED_PASS);
+        doctor.getUser().getRoles().add(role);
+        return doctor;
     }
 
     private Role createDoctorRole() {
-        Role patientRole = new Role();
-        patientRole.setName(ROLE_DOCTOR);
-        return patientRole;
+        Role doctorRole = new Role();
+        doctorRole.setName(ROLE_DOCTOR);
+        return doctorRole;
     }
 
 }
