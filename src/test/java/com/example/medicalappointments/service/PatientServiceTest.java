@@ -2,6 +2,7 @@ package com.example.medicalappointments.service;
 
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.exception.NotUniqueException;
+import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.Role;
 import com.example.medicalappointments.model.User;
@@ -12,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 import static com.example.medicalappointments.exception.NotUniqueException.ConflictingField.*;
@@ -37,6 +40,23 @@ class PatientServiceTest {
 
     @InjectMocks
     private PatientService patientService;
+
+    @Test
+    public void getAll_success() {
+        Role patientRole = createPatientRole();
+        Patient patient = createPersistedPatient(patientRole);
+
+        when(patientRepository.findAll()).thenReturn(List.of(patient));
+
+        List<Patient> resultedPatients = patientService.getAllPatients();
+
+        assertEquals(1, resultedPatients.size());
+        assertEquals(resultedPatients.get(0).getId(), patient.getId());
+        assertEquals(resultedPatients.get(0).getUser().getId(), patient.getUser().getId());
+        assertTrue(resultedPatients.get(0).getUser().getRoles().contains(patientRole));
+
+        verify(patientRepository, times(1)).findAll();
+    }
 
     @Test
     void createPatient_success() {

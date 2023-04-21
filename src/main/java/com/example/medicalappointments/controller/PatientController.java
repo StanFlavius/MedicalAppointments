@@ -14,15 +14,26 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/patients")
 public class PatientController {
 
     private final PatientService patientService;
+    private final static String ALL_PATIENTS = "patients";
+    private final static String VIEW_PATIENT = "patient_info";
+
+    @GetMapping
+    public String getAll(Model model) {
+        var patients = patientService.getAllPatients();
+        model.addAttribute("patients", patients);
+        return ALL_PATIENTS;
+    }
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {

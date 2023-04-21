@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,6 +23,15 @@ class PatientControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void showPatients_admin_success() throws Exception {
+        mockMvc.perform(get("/patients"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("patients"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
 
     @Test
     @WithAnonymousUser

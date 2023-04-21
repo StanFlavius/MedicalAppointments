@@ -5,6 +5,7 @@ import com.example.medicalappointments.exception.NotUniqueException;
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.User;
 import com.example.medicalappointments.repository.PatientRepository;
+import com.example.medicalappointments.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +26,11 @@ public class PatientService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final PatientRepository patientRepository;
+    private final UserRepository userRepository;
+
+    public List<Patient> getAllPatients() {
+        return patientRepository.findAll();
+    }
 
     public Patient createPatient(Patient patient) {
         User user = patient.getUser();
