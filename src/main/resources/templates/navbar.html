@@ -16,6 +16,12 @@
                 <li><a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/' ? 'active':''}" th:href="@{/}">Home</a></li>
 
                 <li sec:authorize="hasAnyRole('ADMIN')">
+                    <a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/patients' ? 'active':''}"
+                       th:href="@{/patients}">Patients
+                    </a>
+                </li>
+
+                <li sec:authorize="hasAnyRole('ADMIN')">
                     <a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/consults' ? 'active':''}"
                        th:href="@{/consults}">Consults
                     </a>
