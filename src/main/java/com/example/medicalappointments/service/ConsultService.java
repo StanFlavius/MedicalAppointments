@@ -3,18 +3,18 @@ package com.example.medicalappointments.service;
 import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.model.Consult;
-import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.Patient;
-import com.example.medicalappointments.model.User;
+import com.example.medicalappointments.model.Role;
 import com.example.medicalappointments.repository.ConsultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 
 @Service
@@ -24,23 +24,41 @@ public class ConsultService {
     private final ConsultRepository consultRepository;
     private final UserService userService;
     private final PatientService patientService;
-    private final DoctorService doctorService;
 
     public Consult saveConsult(Consult consult) {
         if (consult.getDate().before(new Date())) {
             throw new CustomException("Date must be in the future!");
         }
         validateConsult(consult);
-
-        if (userService.hasRole(ROLE_DOCTOR)) {
-            Doctor doctor = doctorService.findByUserId(userService.getCurrentUser().getId());
-            consult.setDoctor(doctor);
-        } else if (userService.hasRole(ROLE_PATIENT)) {
-            Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
-            consult.setPatient(patient);
-        }
+        Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
+        consult.setPatient(patient);
 
         return consultRepository.save(consult);
+    }
+
+    public List<Consult> getAllConsults() {
+        Set<String> roles = userService.getCurrentUser().getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+        if (roles.contains(ROLE_PATIENT)) {
+            Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
+            return consultRepository.findAllByPatient_Id(patient.getId());
+        }
+        return consultRepository.findAll();
+    }
+
+    public Consult getConsultById(Long id) {
+        return consultRepository.findById(id)
+                .orElseThrow(() -> EntityNotFoundException.builder()
+                        .entityId(id)
+                        .entityType("Consult")
+                        .build());
+    }
+
+    public void deleteConsultById(Long id) {
+        Consult consult = getConsultById(id);
+        if (consult.getDate().before(new Date())) {
+            throw new CustomException("You cannot delete a past consult!");
+        }
+        consultRepository.delete(consult);
     }
 
     private void validateConsult(Consult consult) {

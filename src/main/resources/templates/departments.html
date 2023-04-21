@@ -11,7 +11,13 @@
 
 <body>
 <div class="container">
-    <table class="table table-striped table-hover mt-5">
+
+    <div class="panel-heading mt-2" style="background-color:lightgray;">
+        <h1 class="panel-title" style="padding: 5px">Departments</h1>
+    </div>
+
+    <table class="table table-striped table-hover mt-4">
+
         <thead class="thead-inverse">
         <tr>
             <th>ID</th>
@@ -31,14 +37,14 @@
                 </a>
             </td>
             <td sec:authorize="hasRole('ADMIN')">
-                <a class="btn btn-secondary" href="#" th:href="@{/departments/{id}/edit(id=${dept.id})}"
+                <a class="btn btn-success" href="#" th:href="@{/departments/{id}/edit(id=${dept.id})}"
                    role="button">
                     Edit
                 </a>
             </td>
             <td sec:authorize="hasRole('ADMIN')">
                 <form th:object="${dept}" th:action="@{/departments/{id}/delete(id=${dept.id})}" th:method="GET">
-                    <button class="btn btn-secondary">Delete</button>
+                    <button class="btn btn-danger">Delete</button>
                 </form>
             </td>
         </tr>

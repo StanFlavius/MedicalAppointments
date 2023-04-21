@@ -2,7 +2,6 @@ package com.example.medicalappointments.controller;
 
 import com.example.medicalappointments.model.Consult;
 import com.example.medicalappointments.model.Doctor;
-import com.example.medicalappointments.model.Patient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -38,7 +37,7 @@ class ConsultControllerTest {
     @Test
     @WithMockUser(username = "pacient_1", password = "123456", roles={"PATIENT"})
     void createConsult_patient_success() throws Exception {
-        Consult consult = createConsultAsPatient();
+        Consult consult = createConsult();
 
         mockMvc.perform(post("/consults")
                         .flashAttr("consult", consult))
@@ -49,7 +48,7 @@ class ConsultControllerTest {
     @Test
     @WithMockUser(username = "pacient_1", password = "123456", roles={"PATIENT"})
     void createConsult_doctorNotSelected_patient_failure() throws Exception {
-        Consult consult = createConsultAsPatient();
+        Consult consult = createConsult();
         consult.setDoctor(null);
 
         mockMvc.perform(post("/consults")
@@ -61,7 +60,7 @@ class ConsultControllerTest {
     @Test
     @WithMockUser(username = "pacient_1", password = "123456", roles={"PATIENT"})
     void createConsult_pastDate_patient_failure() throws Exception {
-        Consult consult = createConsultAsPatient();
+        Consult consult = createConsult();
         consult.setDate(new Date(System.currentTimeMillis() - 1000));
 
         mockMvc.perform(post("/consults")
@@ -73,7 +72,7 @@ class ConsultControllerTest {
     @Test
     @WithMockUser(username = "pacient_1", password = "123456", roles={"PATIENT"})
     void createConsult_dateNotInWorkingHours_patient_failure() throws Exception {
-        Consult consult = createConsultAsPatient();
+        Consult consult = createConsult();
         consult.getDate().setHours(22);
 
         mockMvc.perform(post("/consults")
@@ -83,62 +82,77 @@ class ConsultControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "doctor_1", password = "123456", roles={"DOCTOR"})
-    void showConsultFormPage_doctor_success() throws Exception {
-        mockMvc.perform(get("/consults/new"))
+    @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
+    public void showConsults_patient_success() throws Exception {
+        mockMvc.perform(get("/consults"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("consult_form"))
+                .andExpect(view().name("consults"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"));
     }
 
     @Test
-    @WithMockUser(username = "doctor_1", password = "123456", roles={"DOCTOR"})
-    void createConsult_doctor_success() throws Exception {
-        Consult consult = createConsultAsDoctor();
+    @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
+    public void showConsultInfo_patient_success() throws Exception {
+        mockMvc.perform(get("/consults/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("consult_info"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
 
-        mockMvc.perform(post("/consults")
-                        .flashAttr("consult", consult))
+    @Test
+    @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
+    public void showConsultInfo_consultNotFound_patient_error() throws Exception {
+        mockMvc.perform(get("/consults/{1}", "999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("err_not_found"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void showConsults_admin_success() throws Exception {
+        mockMvc.perform(get("/consults"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("consults"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void showConsultInfo_admin_success() throws Exception {
+        mockMvc.perform(get("/consults/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("consult_info"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void showConsultInfo_consultNotFound_admin_error() throws Exception {
+        mockMvc.perform(get("/consults/{1}", "999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("err_not_found"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
+    public void deleteConsult_patient_success() throws Exception {
+        mockMvc.perform(get("/consults/{1}/delete", "2"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/consults"));
     }
 
     @Test
-    @WithMockUser(username = "doctor_1", password = "123456", roles={"DOCTOR"})
-    void createConsult_patientNotSelected_doctor_failure() throws Exception {
-        Consult consult = createConsultAsDoctor();
-        consult.setPatient(null);
-
-        mockMvc.perform(post("/consults")
-                        .flashAttr("consult", consult))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/consults/new"));
+    @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
+    public void deleteConsult_consultNotFound_patient_error() throws Exception {
+        mockMvc.perform(get("/consults/{1}/delete", "999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("err_not_found"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
     }
 
-    @Test
-    @WithMockUser(username = "doctor_1", password = "123456", roles={"DOCTOR"})
-    void createConsult_pastDate_doctor_failure() throws Exception {
-        Consult consult = createConsultAsDoctor();
-        consult.setDate(new Date(System.currentTimeMillis() - 1000));
-
-        mockMvc.perform(post("/consults")
-                        .flashAttr("consult", consult))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/consults/new"));
-    }
-
-    @Test
-    @WithMockUser(username = "doctor_1", password = "123456", roles={"DOCTOR"})
-    void createConsult_dateNotInWorkingHours_doctor_failure() throws Exception {
-        Consult consult = createConsultAsDoctor();
-        consult.getDate().setHours(22);
-
-        mockMvc.perform(post("/consults")
-                        .flashAttr("consult", consult))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/consults/new"));
-    }
-
-    private Consult createConsultAsPatient() {
+    private Consult createConsult() {
         Doctor doctor = new Doctor();
         doctor.setId(1L);
 
@@ -150,23 +164,6 @@ class ConsultControllerTest {
 
         Consult consult = new Consult();
         consult.setDoctor(doctor);
-        consult.setDate(date);
-
-        return consult;
-    }
-
-    private Consult createConsultAsDoctor() {
-        Patient patient = new Patient();
-        patient.setId(1L);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, 2);
-        Date date = calendar.getTime();
-        date.setHours(18);
-
-        Consult consult = new Consult();
-        consult.setPatient(patient);
         consult.setDate(date);
 
         return consult;
