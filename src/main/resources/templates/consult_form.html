@@ -76,10 +76,12 @@
 
                     <div class="col-md-4" sec:authorize="hasRole('DOCTOR')">
                         <label class="col-form-label">Patient:</label>
-                        <select class="form-control" th:field="*{patient.id}">
+                        <select class="form-control" th:field="*{patient.id}" />
+                            <option selected th:disabled="true" th:value="null"> -- Select a patient -- </option>
                             <option th:each="patient : ${allPatients}"
                                     th:value="${patient.id}"
-                                    th:utext="|${patient.user.lastName} ${patient.user.firstName}|">
+                                    th:utext="|${patient.user.lastName} ${patient.user.firstName}|"
+                                    th:selected="${consult.patient.id == patient.id}">
                             </option>
                         </select>
                         <label th:if="${#fields.hasErrors('patient')}" th:errors="*{patient}" type="error"
@@ -104,7 +106,7 @@
                     </div>
                 </div>
 
-                <div class="row col-md-8" sec:authorize="hasRole('DOCTOR')">
+                <div class="row col-md-8 mt-2" sec:authorize="hasRole('DOCTOR')">
                     <div class="col-md-6">
                         <label>Symptoms:</label>
                         <input type="text" class="form-control" th:field="*{symptoms}" placeholder="Symptoms"/>
@@ -114,7 +116,7 @@
                         </label>
                     </div>
 
-                    <div class="col-md-5">
+                    <div class="col-md-6">
                         <label>Diagnose:</label>
                         <input type="text" class="form-control" th:field="*{diagnose}" placeholder="Diagnose"/>
                         <label th:if="${#fields.hasErrors('diagnose')}" th:errors="*{diagnose}" type="error"
@@ -124,8 +126,8 @@
                     </div>
                 </div>
 
-                <div class="row col-md-8" sec:authorize="hasRole('DOCTOR')">
-                    <div class="col-md-11">
+                <div class="row col-md-8 mt-2" sec:authorize="hasRole('DOCTOR')">
+                    <div class="col-md-12">
                         <label>Comments:</label>
                         <input type="text" class="form-control" th:field="*{comment}" placeholder="Comments"/>
                         <label th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}" type="error"
@@ -135,12 +137,10 @@
                     </div>
                 </div>
 
-                <br>
-
-                <div class="row" sec:authorize="hasRole('DOCTOR')">
-                    <div class="col-md-8 form-group">
+                <div class="row col-md-8 mt-2" sec:authorize="hasRole('DOCTOR')">
+                    <div class="col-md-6 form-group">
+                        <label>Medication:</label>
                         <div class="container mt-10" style="padding: 0">
-
                             <select id="medications" th:name="medications" class="selectpicker col-md-10" multiple
                                     aria-label="size 10 select example">
                                 <option th:each="selectedMed: ${selectedMedications}" th:name="medications"

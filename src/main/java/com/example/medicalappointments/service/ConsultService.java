@@ -3,6 +3,7 @@ package com.example.medicalappointments.service;
 import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.model.Consult;
+import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.Role;
 import com.example.medicalappointments.repository.ConsultRepository;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 
 @Service
@@ -24,14 +26,21 @@ public class ConsultService {
     private final ConsultRepository consultRepository;
     private final UserService userService;
     private final PatientService patientService;
+    private final DoctorService doctorService;
 
     public Consult saveConsult(Consult consult) {
         if (consult.getDate().before(new Date())) {
             throw new CustomException("Date must be in the future!");
         }
         validateConsult(consult);
-        Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
-        consult.setPatient(patient);
+
+        if (userService.hasRole(ROLE_DOCTOR)) {
+            Doctor doctor = doctorService.findByUserId(userService.getCurrentUser().getId());
+            consult.setDoctor(doctor);
+        } else if (userService.hasRole(ROLE_PATIENT)) {
+            Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
+            consult.setPatient(patient);
+        }
 
         return consultRepository.save(consult);
     }
