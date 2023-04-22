@@ -17,6 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 
+import static com.example.medicalappointments.controller.DepartmentController.REDIRECT;
+
 @Controller
 @RequiredArgsConstructor
 public class PatientController {
@@ -25,6 +27,12 @@ public class PatientController {
     private final ConsultService consultService;
     private final static String ALL_PATIENTS = "patients";
     private final static String VIEW_PATIENT = "patient_info";
+
+    @GetMapping("/patients/{id}/delete")
+    public String deletePatient(@PathVariable Long id) {
+        patientService.deletePatientById(id);
+        return REDIRECT + ALL_PATIENTS;
+    }
 
     @GetMapping("/patients")
     public String getAll(Model model) {

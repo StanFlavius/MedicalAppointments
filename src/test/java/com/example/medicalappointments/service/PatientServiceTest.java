@@ -53,7 +53,7 @@ class PatientServiceTest {
 
         assertEquals(resultedPatient.getId(), patient.getId());
         assertEquals(resultedPatient.getUser().getId(), patient.getUser().getId());
-        assertTrue(resultedPatient.getUser().getRoles().contains(patientRole));
+        assertTrue(resultedPatient.getUser().getRole().equals(patientRole));
 
         verify(patientRepository, times(1)).findById(patient.getId());
     }
@@ -80,7 +80,7 @@ class PatientServiceTest {
         assertEquals(1, resultedPatients.size());
         assertEquals(resultedPatients.get(0).getId(), patient.getId());
         assertEquals(resultedPatients.get(0).getUser().getId(), patient.getUser().getId());
-        assertTrue(resultedPatients.get(0).getUser().getRoles().contains(patientRole));
+        assertTrue(resultedPatients.get(0).getUser().getRole().equals(patientRole));
 
         verify(patientRepository, times(1)).findAll();
     }
@@ -104,7 +104,7 @@ class PatientServiceTest {
         assertEquals(persistedPatient.getId(), resultedPatient.getId());
         assertEquals(persistedPatient.getUser().getId(), resultedPatient.getUser().getId());
         assertEquals(ENCODED_PASS, resultedPatient.getUser().getPassword());
-        assertTrue(resultedPatient.getUser().getRoles().contains(patientRole));
+        assertTrue(resultedPatient.getUser().getRole().equals(patientRole));
 
         verify(patientRepository, times(1)).existsByCnp(patient.getCnp());
         verify(patientRepository, times(1)).save(patient);
@@ -189,7 +189,7 @@ class PatientServiceTest {
         Patient patient = createPatient();
         patient.setId(1L);
         patient.getUser().setPassword(ENCODED_PASS);
-        patient.getUser().getRoles().add(role);
+        patient.getUser().setRole(role);
         return patient;
     }
 

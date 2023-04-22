@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
 import javax.transaction.Transactional;
 import java.util.Calendar;
 import java.util.Date;
@@ -62,7 +63,9 @@ public class ConsultService {
     }
 
     public List<Consult> getAllConsults() {
-        Set<String> roles = userService.getCurrentUser().getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+        List<Role> rolesList = new ArrayList<>();
+        rolesList.add(userService.getCurrentUser().getRole());
+        Set<String> roles = rolesList.stream().map(Role::getName).collect(Collectors.toSet());
         if (roles.contains(ROLE_PATIENT)) {
             Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
             return consultRepository.findAllByPatient_Id(patient.getId());

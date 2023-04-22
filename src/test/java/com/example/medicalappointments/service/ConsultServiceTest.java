@@ -118,7 +118,7 @@ class ConsultServiceTest {
         Consult consult = createPersistedConsult();
         consult.setPatient(patient);
 
-        when(userService.getCurrentUser()).thenReturn(User.builder().roles(patient.getUser().getRoles()).build());
+        when(userService.getCurrentUser()).thenReturn(User.builder().role(patient.getUser().getRole()).build());
         when(patientService.findByUserId(userService.getCurrentUser().getId())).thenReturn(patient);
         when(consultRepository.findAllByPatient_Id(patient.getId())).thenReturn(List.of(consult));
 
@@ -127,7 +127,7 @@ class ConsultServiceTest {
         assertEquals(1, resultedConsults.size());
         assertEquals(resultedConsults.get(0).getId(), consult.getId());
         assertEquals(resultedConsults.get(0).getPatient(), patient);
-        assertTrue(resultedConsults.get(0).getPatient().getUser().getRoles().containsAll(patient.getUser().getRoles()));
+        assertTrue(resultedConsults.get(0).getPatient().getUser().getRole().equals(patient.getUser().getRole()));
 
         verify(consultRepository, times(1)).findAllByPatient_Id(patient.getId());
         verify(consultRepository, never()).findAll();
@@ -139,7 +139,7 @@ class ConsultServiceTest {
         Consult consult = createPersistedConsult();
         consult.setPatient(patient);
 
-        when(userService.getCurrentUser()).thenReturn(User.builder().roles(Set.of(createAdminRole())).build());
+        when(userService.getCurrentUser()).thenReturn(User.builder().role(createAdminRole()).build());
         when(consultRepository.findAll()).thenReturn(List.of(consult));
 
         List<Consult> resultedConsults = consultService.getAllConsults();
@@ -237,7 +237,7 @@ class ConsultServiceTest {
         Doctor doctor = new Doctor();
         doctor.setId(1L);
         doctor.setUser(user);
-        doctor.getUser().getRoles().add(createDoctorRole());
+        doctor.getUser().setRole(createDoctorRole());
 
         return doctor;
     }
@@ -264,7 +264,7 @@ class ConsultServiceTest {
         Patient patient = createPatient();
         patient.setId(1L);
         patient.getUser().setPassword("enc_pass");
-        patient.getUser().getRoles().add(createPatientRole());
+        patient.getUser().setRole(createPatientRole());
         return patient;
     }
 

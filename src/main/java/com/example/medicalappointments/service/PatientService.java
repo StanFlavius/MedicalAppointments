@@ -2,9 +2,13 @@ package com.example.medicalappointments.service;
 
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.exception.NotUniqueException;
+import com.example.medicalappointments.model.Consult;
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.User;
+import com.example.medicalappointments.repository.ConsultRepository;
 import com.example.medicalappointments.repository.PatientRepository;
+import com.example.medicalappointments.repository.RoleRepository;
+import com.example.medicalappointments.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +29,15 @@ public class PatientService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final PatientRepository patientRepository;
+    private final ConsultRepository consultRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
+    public void deletePatientById(Long id){
+        Patient patient = patientRepository.findById(id).get();
+
+        patientRepository.delete(patient);
+    }
 
     public Patient findById(Long id){
         return patientRepository.findById(id)
@@ -35,7 +48,7 @@ public class PatientService {
     }
     public Patient createPatient(Patient patient) {
         User user = patient.getUser();
-        user.setRoles(Collections.singleton(roleService.getRoleByName(ROLE_PATIENT)));
+        user.setRole(roleService.getRoleByName(ROLE_PATIENT));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (userService.existsByUsername(user.getUsername())) {
             throw new NotUniqueException(USERNAME, String.format("Username %s already exists!", user.getUsername()));
