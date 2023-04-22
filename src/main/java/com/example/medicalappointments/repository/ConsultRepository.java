@@ -17,4 +17,6 @@ public interface ConsultRepository extends JpaRepository<Consult, Long> {
     List<Consult> findConsultsInTimeRange(@Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd, @Param("doctor") Doctor doctor);
 
     List<Consult> findAllByPatient_Id(Long patientId);
+
+    List<Consult> findAllByDoctor_Id(Long doctorId);
 }

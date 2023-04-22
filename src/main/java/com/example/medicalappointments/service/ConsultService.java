@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import javax.print.Doc;
 import javax.transaction.Transactional;
 import java.util.Calendar;
 import java.util.Date;
@@ -69,6 +70,10 @@ public class ConsultService {
         if (roles.contains(ROLE_PATIENT)) {
             Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
             return consultRepository.findAllByPatient_Id(patient.getId());
+        }
+        if (roles.contains(ROLE_DOCTOR)) {
+            Doctor doctor = doctorService.findByUserId(userService.getCurrentUser().getId());
+            return consultRepository.findAllByDoctor_Id(doctor.getId());
         }
         return consultRepository.findAll();
     }
