@@ -55,9 +55,6 @@ public class User {
     @JoinColumn(name = "FK_ROLE_ID")
     private Role role;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Patient patient;
-
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<Role> roles = new ArrayList<>();
         roles.add(getRole());

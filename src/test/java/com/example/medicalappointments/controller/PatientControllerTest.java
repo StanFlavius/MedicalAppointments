@@ -1,7 +1,9 @@
 package com.example.medicalappointments.controller;
 
+import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.User;
+import com.example.medicalappointments.service.PatientService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,6 +13,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -22,6 +25,56 @@ class PatientControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private PatientService patientService;
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void editPatient_POST_admin_success() throws Exception {
+
+        Patient patient = patientService.findById(1L);
+        User user = patient.getUser();
+
+        user.setLastName("ABC");
+        user.setFirstName("ABC");
+
+        mockMvc.perform(post("/patients")
+                .flashAttr("patient", patient)
+                .flashAttr("user", user))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/patients"));
+
+        patient = patientService.findById(1L);
+        assertEquals("ABC", patient.getUser().getLastName());
+        assertEquals("ABC", patient.getUser().getFirstName());
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void editPatient_POST_admin_fail() throws Exception {
+
+        Patient patient = patientService.findById(1L);
+        User user = patient.getUser();
+
+        patient.getUser().setLastName("ABC");
+        patient.getUser().setFirstName("ABC");
+        user.setUsername("");
+
+        mockMvc.perform(post("/patients")
+                .flashAttr("patient", patient)
+                .flashAttr("user", user))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/patients/1/edit"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void deletePatient_admin_success() throws Exception {
+        mockMvc.perform(get("/patients/{id}/delete", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/patients"));
+    }
 
     @Test
     @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")

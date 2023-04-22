@@ -23,6 +23,7 @@
       <th>Email</th>
       <th>Username</th>
       <th>Details</th>
+      <th sec:authorize="hasRole('ADMIN')">Edit</th>
       <th sec:authorize="hasRole('ADMIN')">Delete</th>
     </tr>
     </thead>
@@ -37,8 +38,13 @@
         </a>
       </td>
       <td sec:authorize="hasRole('ADMIN')">
+        <a href="#" th:href="@{'/patients/{id}/edit'(id=${patient.id})}">
+          <button class="btn btn-success">Edit</button>
+        </a>
+      </td>
+      <td sec:authorize="hasRole('ADMIN')">
         <form th:object="${patient}" th:action="@{/patients/{id}/delete(id=${patient.id})}" th:method="GET">
-          <button class="btn btn-secondary">Delete</button>
+          <button class="btn btn-danger">Delete</button>
         </form>
       </td>
     </tr>

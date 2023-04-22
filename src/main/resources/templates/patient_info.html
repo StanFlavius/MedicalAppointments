@@ -52,14 +52,6 @@
               <label>CNP:</label>
               <input type="text" disabled class="form-control" th:field="${patient.cnp}"/>
             </div>
-
-            <div style="margin-top: 15px" sec:authorize="hasRole('ADMIN')">
-              <a class="btn btn-secondary" th:href="@{'/patient/{id}/edit'(id=${patient.id})}"
-                 href="#" role="button">
-                Edit
-              </a>
-            </div>
-
           </div>
 
           <div class="col col-md-9">
@@ -70,7 +62,6 @@
                 <th>Patient</th>
                 <th>Date</th>
                 <th>Details</th>
-                <th sec:authorize="hasRole('ADMIN')">Edit</th>
                 <th sec:authorize="hasRole('ADMIN')">Delete</th>
               </tr>
               </thead>
@@ -82,12 +73,6 @@
                   <a class="btn btn-secondary" th:href="@{'/consults/{id}'(id=${consult.id})}"
                      role="button" href="#">
                     Details
-                  </a>
-                </td>
-                <td sec:authorize="hasRole('ADMIN')">
-                  <a class="btn btn-secondary" th:href="@{'/consults/{id}/edit'(id=${consult.id})}"
-                     href="#" role="button">
-                    Edit
                   </a>
                 </td>
                 <td sec:authorize="hasRole('ADMIN')">

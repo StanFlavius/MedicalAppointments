@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +26,11 @@ public class Patient {
     private Long id;
 
     @Pattern(regexp = CNP_REGEX, message = "Invalid CNP!")
+    @Size(min = 13, max = 13, message = "CNP should have 13 digits!")
     @NotBlank(message = "CNP must be provided!")
     private String cnp;
 
-    @Valid
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.ALL })
+    @OneToOne
     @JoinColumn(name = "FK_USER_ID")
     private User user;
 

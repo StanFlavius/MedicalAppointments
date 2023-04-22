@@ -7,11 +7,13 @@ import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.Role;
 import com.example.medicalappointments.model.User;
 import com.example.medicalappointments.repository.PatientRepository;
+import com.example.medicalappointments.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -39,8 +41,55 @@ class PatientServiceTest {
     @Mock
     private PatientRepository patientRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private PatientService patientService;
+
+    @Test
+    public void editPatient_success() {
+        Role patientRole = createPatientRole();
+        Patient patient = createPersistedPatient(patientRole);
+        User user = patient.getUser();
+
+        Patient patient2 = createPersistedPatient(patientRole);
+        User user2 = patient2.getUser();
+        user2.setFirstName("ABC");
+        user2.setLastName("ABC");
+        patient2.setUser(user2);
+
+        when(patientRepository.findById(patient.getId())).thenReturn(Optional.of(patient));
+        when(patientRepository.save(any())).thenReturn(patient2);
+
+        Patient resultedPatient = patientService.saveOrUpdateUser(patient, user);
+
+        assertEquals(resultedPatient.getId(), patient2.getId());
+        assertEquals(resultedPatient.getUser().getFirstName(), patient2.getUser().getFirstName());
+        assertEquals(resultedPatient.getUser().getLastName(), patient2.getUser().getLastName());
+    }
+
+    @Test
+    public void removePatient_success() {
+        Role patientRole = createPatientRole();
+        Patient patient = createPersistedPatient(patientRole);
+
+        when(patientRepository.findById(patient.getId())).thenReturn(Optional.of(patient));
+
+        Patient resultedPatient = patientService.findById(patient.getId());
+
+        doNothing().when(patientRepository).deleteById(patient.getId());
+        doNothing().when(userRepository).delete(patient.getUser());
+
+        patientService.deletePatientById(patient.getId());
+
+        assertEquals(resultedPatient.getId(), patient.getId());
+        assertEquals(resultedPatient.getUser().getId(), patient.getUser().getId());
+        assertTrue(resultedPatient.getUser().getRole().equals(patientRole));
+        verify(patientRepository, times(1)).deleteById(patient.getId());
+        verify(userRepository, times(1)).delete(patient.getUser());
+        verify(patientRepository, times(2)).findById(patient.getId());
+    }
 
     @Test
     public void getById_success() {
@@ -172,6 +221,7 @@ class PatientServiceTest {
 
     private Patient createPatient() {
         User user = new User();
+        user.setId(1L);
         user.setUsername("test-username");
         user.setPassword("test-pass");
         user.setEmail("test@gmail.com");
