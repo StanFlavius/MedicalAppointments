@@ -85,8 +85,9 @@ public class PatientService {
         userInDB.setLastName(user.getLastName());
 
         patient.setCnp(patientInDB.getCnp());
-        patient.setUser(userInDB);
+        userRepository.save(userInDB);
 
+        patient.setUser(userInDB);
         return patientRepository.save(patient);
     }
 }

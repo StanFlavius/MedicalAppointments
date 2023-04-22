@@ -55,6 +55,9 @@ public class User {
     @JoinColumn(name = "FK_ROLE_ID")
     private Role role;
 
+    @OneToOne(mappedBy = "user")
+    private Patient patient;
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<Role> roles = new ArrayList<>();
         roles.add(getRole());
@@ -80,5 +83,3 @@ public class User {
     @Transient
     private Boolean enabled = true;
 }
-
-
