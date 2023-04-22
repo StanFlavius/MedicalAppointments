@@ -1,9 +1,7 @@
 package com.example.medicalappointments.controller;
 
 import com.example.medicalappointments.model.Department;
-import com.example.medicalappointments.service.DepartmentServiceImpl;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,17 +9,18 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("h2")
+@Transactional
 public class DepartmentControllerTest {
 
     @Autowired
@@ -143,6 +142,38 @@ public class DepartmentControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/departments/2/edit"))
                 .andExpect(flash().attribute("error_department", "Department with name Neurologie already exists!"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", roles = "ADMIN")
+    void deleteDepartment_byAdmin_success() throws Exception {
+        mockMvc.perform(get("/departments/{id}/delete", 1))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/departments"));
+    }
+
+    @Test
+    @WithMockUser(username = "doctor_1", roles = "DOCTOR")
+    void deleteDepartment_byDoctor_fail() throws Exception {
+        mockMvc.perform(get("/departments/{id}/delete", 1))
+                .andExpect(status().isForbidden())
+                .andExpect(forwardedUrl("/access-denied"));
+    }
+
+    @Test
+    @WithMockUser(username = "patient_1", roles = "PATIENT")
+    void deleteDepartment_byPatient_fail() throws Exception {
+        mockMvc.perform(get("/departments/{id}/delete", 1))
+                .andExpect(status().isForbidden())
+                .andExpect(forwardedUrl("/access-denied"));
+    }
+
+    @Test
+    @WithAnonymousUser
+    void deleteDepartment_byAnonymous_fail() throws Exception {
+        mockMvc.perform(get("/departments/{id}/delete", 1))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("http://localhost/login"));
     }
 
     private Department createDepartment() {
