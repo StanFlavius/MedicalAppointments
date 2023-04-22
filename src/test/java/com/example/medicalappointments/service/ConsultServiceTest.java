@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
@@ -31,6 +32,9 @@ class ConsultServiceTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private EmailSenderService emailSenderService;
+
     @InjectMocks
     private ConsultService consultService;
 
@@ -38,19 +42,27 @@ class ConsultServiceTest {
     void createConsult_patient_success() {
         Consult consult = createConsult();
         Patient persistedPatient = createPersistedPatient();
+        Doctor persistedDoctor = createPersistedDoctor();
         Consult persistedConsult = createPersistedConsult();
         persistedConsult.setPatient(persistedPatient);
+        persistedConsult.setDoctor(persistedDoctor);
+        ReflectionTestUtils.setField(consultService, "emailSenderPassword", "password");
 
         when(userService.hasRole(ROLE_DOCTOR)).thenReturn(false);
         when(userService.hasRole(ROLE_PATIENT)).thenReturn(true);
         when(userService.getCurrentUser()).thenReturn(persistedPatient.getUser());
         when(patientService.findByUserId(persistedPatient.getUser().getId())).thenReturn(persistedPatient);
+        when(doctorService.findById(persistedDoctor.getId())).thenReturn(persistedDoctor);
         when(consultRepository.findConsultsInTimeRange(any(), any(), any())).thenReturn(Collections.emptyList());
         when(consultRepository.save(consult)).thenReturn(persistedConsult);
+        doNothing().when(emailSenderService).sendConsultAssignmentEmail(persistedDoctor.getUser(), persistedConsult);
+
         Consult resultedConsult = consultService.saveConsult(consult);
+
         assertEquals(persistedConsult.getId(), resultedConsult.getId());
         assertEquals(persistedPatient, consult.getPatient());
         verify(consultRepository, times(1)).save(consult);
+        verify(emailSenderService, times(1)).sendConsultAssignmentEmail(persistedDoctor.getUser(), persistedConsult);
     }
 
     @Test
@@ -72,6 +84,7 @@ class ConsultServiceTest {
         assertEquals(persistedDoctor, consult.getDoctor());
 
         verify(consultRepository, times(1)).save(consult);
+        verify(emailSenderService, never()).sendConsultAssignmentEmail(any(), any());
     }
 
     @Test

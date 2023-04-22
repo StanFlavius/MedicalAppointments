@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 import static com.example.medicalappointments.exception.NotUniqueException.ConflictingField.*;

@@ -8,13 +8,20 @@ import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.Role;
 import com.example.medicalappointments.repository.ConsultRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import javax.transaction.Transactional;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
+import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +31,12 @@ public class ConsultService {
     private final UserService userService;
     private final PatientService patientService;
     private final DoctorService doctorService;
+    private final EmailSenderService emailSenderService;
 
+    @Value("${spring.mail.password}")
+    private String emailSenderPassword;
+
+    @Transactional
     public Consult saveConsult(Consult consult) {
         if (consult.getDate().before(new Date())) {
             throw new CustomException("Date must be in the future!");
@@ -39,7 +51,15 @@ public class ConsultService {
             consult.setPatient(patient);
         }
 
-        return consultRepository.save(consult);
+        // It is important to persist the consult before sending the email,
+        // so that if there would be a persistence error, the email won't be sent anymore
+        Consult savedConsult = consultRepository.save(consult);
+        if (userService.hasRole(ROLE_PATIENT) && isNotBlank(emailSenderPassword)) {
+            // We need to fetch the doctor by id, so that it contains the User
+            Doctor doctor = doctorService.findById(savedConsult.getDoctor().getId());
+            emailSenderService.sendConsultAssignmentEmail(doctor.getUser(), savedConsult);
+        }
+        return savedConsult;
     }
 
     public List<Consult> getAllConsults() {
