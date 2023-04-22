@@ -2,7 +2,6 @@ package com.example.medicalappointments.controller;
 
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.User;
-import com.example.medicalappointments.service.PatientService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -45,7 +44,7 @@ class PatientControllerTest {
     @Test
     @WithAnonymousUser
     void showRegisterPage_success() throws Exception {
-        mockMvc.perform(get("/register"))
+        mockMvc.perform(get("/patients/register"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("register"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"));
@@ -56,7 +55,7 @@ class PatientControllerTest {
     void register_success() throws Exception {
         Patient patient = createPatient();
 
-        mockMvc.perform(post("/register")
+        mockMvc.perform(post("/patients/register")
                         .flashAttr("patient", patient))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
@@ -69,7 +68,7 @@ class PatientControllerTest {
         User user = new User();
         patient.setUser(user);
 
-        mockMvc.perform(post("/register")
+        mockMvc.perform(post("/patients/register")
                         .flashAttr("patient", patient))
                 .andExpect(status().isOk())
                 .andExpect(view().name("register"))

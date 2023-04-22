@@ -52,8 +52,8 @@
                 <li sec:authorize="!isAuthenticated()"><a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/login' ? 'active':''}"
                                                           th:href="@{/login}">Login</a></li>
 
-                <li sec:authorize="!isAuthenticated()"><a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/register' ? 'active':''}"
-                                                          th:href="@{/register}">Register</a></li>
+                <li sec:authorize="!isAuthenticated()"><a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/patients/register' ? 'active':''}"
+                                                          th:href="@{/patients/register}">Register</a></li>
 
                 <li sec:authorize="isAuthenticated()">
                     <form th:action="@{/logout}" th:method="POST" >

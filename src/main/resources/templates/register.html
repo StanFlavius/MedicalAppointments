@@ -14,7 +14,7 @@
         <h1>Register as a patient!</h1>
     </div>
 
-    <form th:object="${patient}" th:action="@{/register/}" class="form-group align-content-lg-start p-3" th:method="POST">
+    <form th:object="${patient}" th:action="@{/patients/register/}" class="form-group align-content-lg-start p-3" th:method="POST">
         <input name="id" type="hidden" th:field="*{id}"/>
         <input name="id" type="hidden" th:field="*{user.id}"/>
         <div class="container">
