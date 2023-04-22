@@ -70,6 +70,14 @@ public class DepartmentControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin_1", roles="ADMIN")
+    void getAllByAdmin_success() throws Exception {
+        mockMvc.perform(get("/departments")
+                        .flashAttr("department", Collections.singletonList(createDepartment())))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @WithMockUser(username = "admin_1", roles={"ADMIN"})
     void create_success_byAdmin() throws Exception {
         Department department = createDepartment();
