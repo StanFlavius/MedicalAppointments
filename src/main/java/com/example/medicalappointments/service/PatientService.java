@@ -5,7 +5,6 @@ import com.example.medicalappointments.exception.NotUniqueException;
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.User;
 import com.example.medicalappointments.repository.PatientRepository;
-import com.example.medicalappointments.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 import static com.example.medicalappointments.exception.NotUniqueException.ConflictingField.*;

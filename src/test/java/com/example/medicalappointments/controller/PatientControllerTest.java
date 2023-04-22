@@ -2,7 +2,6 @@ package com.example.medicalappointments.controller;
 
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.User;
-import com.example.medicalappointments.service.PatientService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
