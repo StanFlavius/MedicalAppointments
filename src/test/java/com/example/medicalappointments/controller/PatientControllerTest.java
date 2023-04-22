@@ -44,7 +44,7 @@ class PatientControllerTest {
     @Test
     @WithAnonymousUser
     void showRegisterPage_success() throws Exception {
-        mockMvc.perform(get("/patients/register"))
+        mockMvc.perform(get("/register"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("register"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"));
@@ -55,7 +55,7 @@ class PatientControllerTest {
     void register_success() throws Exception {
         Patient patient = createPatient();
 
-        mockMvc.perform(post("/patients/register")
+        mockMvc.perform(post("/register")
                         .flashAttr("patient", patient))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
@@ -68,7 +68,7 @@ class PatientControllerTest {
         User user = new User();
         patient.setUser(user);
 
-        mockMvc.perform(post("/patients/register")
+        mockMvc.perform(post("/register")
                         .flashAttr("patient", patient))
                 .andExpect(status().isOk())
                 .andExpect(view().name("register"))
