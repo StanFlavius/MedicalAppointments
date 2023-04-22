@@ -106,7 +106,7 @@ public class DoctorController {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Set.of(roleService.getRoleByName(ROLE_DOCTOR)));
+        user.setRole(roleService.getRoleByName(ROLE_DOCTOR));
 
         doctor.setUser(user);
 

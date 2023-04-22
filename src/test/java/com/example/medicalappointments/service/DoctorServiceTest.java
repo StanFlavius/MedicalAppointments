@@ -49,7 +49,7 @@ public class DoctorServiceTest {
         assertEquals(1, resultedDoctors.size());
         assertEquals(resultedDoctors.get(0).getId(), doctor.getId());
         assertEquals(resultedDoctors.get(0).getUser().getId(), doctor.getUser().getId());
-        assertTrue(resultedDoctors.get(0).getUser().getRoles().contains(doctorRole));
+        assertTrue(resultedDoctors.get(0).getUser().getRole().equals(doctorRole));
 
         verify(doctorRepository, times(1)).findByDepartment(department);
         verify(departmentRepository, times(1)).getById(10L);
@@ -67,7 +67,7 @@ public class DoctorServiceTest {
         assertEquals(1, resultedDoctors.size());
         assertEquals(resultedDoctors.get(0).getId(), doctor.getId());
         assertEquals(resultedDoctors.get(0).getUser().getId(), doctor.getUser().getId());
-        assertTrue(resultedDoctors.get(0).getUser().getRoles().contains(doctorRole));
+        assertTrue(resultedDoctors.get(0).getUser().getRole().equals(doctorRole));
 
         verify(doctorRepository, times(1)).findAll();
     }
@@ -83,7 +83,7 @@ public class DoctorServiceTest {
 
         assertEquals(resultedDoctor.getId(), doctor.getId());
         assertEquals(resultedDoctor.getUser().getId(), doctor.getUser().getId());
-        assertTrue(resultedDoctor.getUser().getRoles().contains(doctorRole));
+        assertTrue(resultedDoctor.getUser().getRole().equals(doctorRole));
 
         verify(doctorRepository, times(1)).findById(doctor.getId());
     }
@@ -149,7 +149,7 @@ public class DoctorServiceTest {
         doctor.setDepartment(department);
         doctor.setId(1L);
         doctor.getUser().setPassword(ENCODED_PASS);
-        doctor.getUser().getRoles().add(role);
+        doctor.getUser().setRole(role);
         return doctor;
     }
 
@@ -157,7 +157,7 @@ public class DoctorServiceTest {
         Doctor doctor = createDoctor();
         doctor.setId(1L);
         doctor.getUser().setPassword(ENCODED_PASS);
-        doctor.getUser().getRoles().add(role);
+        doctor.getUser().setRole(role);
         return doctor;
     }
 

@@ -110,7 +110,7 @@ public class DataLoader implements CommandLineRunner {
                     .email("admin_1@email.com")
                     .firstName("Admin")
                     .lastName("Admin")
-                    .roles(Collections.singleton(adminRole))
+                    .role(adminRole)
                     .build();
 
             User userDoctor1 = User.builder()
@@ -119,7 +119,7 @@ public class DataLoader implements CommandLineRunner {
                     .email("doctor_1@email.com")
                     .firstName("Alin")
                     .lastName("Sava")
-                    .roles(Collections.singleton(doctorRole))
+                    .role(doctorRole)
                     .build();
 
             User userDoctor2 = User.builder()
@@ -128,7 +128,7 @@ public class DataLoader implements CommandLineRunner {
                     .email("doctor_2@email.com")
                     .firstName("Vlad")
                     .lastName("Duncea")
-                    .roles(Collections.singleton(doctorRole))
+                    .role(doctorRole)
                     .build();
 
             User userDoctor3 = User.builder()
@@ -137,7 +137,7 @@ public class DataLoader implements CommandLineRunner {
                     .email("doctor_3@email.com")
                     .firstName("Cristian")
                     .lastName("Plamadeala")
-                    .roles(Collections.singleton(doctorRole))
+                    .role(doctorRole)
                     .build();
 
             User userPacient1 = User.builder()
@@ -146,7 +146,7 @@ public class DataLoader implements CommandLineRunner {
                     .email("pacient_1@email.com")
                     .firstName("Marius")
                     .lastName("Iordache")
-                    .roles(Collections.singleton(pacientRole))
+                    .role(pacientRole)
                     .build();
 
             User userPacient2 = User.builder()
@@ -155,7 +155,7 @@ public class DataLoader implements CommandLineRunner {
                     .email("pacient_2@email.com")
                     .firstName("Cristina")
                     .lastName("Stefanescu")
-                    .roles(Collections.singleton(pacientRole))
+                    .role(pacientRole)
                     .build();
 
             userRepository.save(userAdmin);

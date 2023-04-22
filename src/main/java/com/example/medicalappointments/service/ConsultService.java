@@ -10,10 +10,7 @@ import com.example.medicalappointments.repository.ConsultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
@@ -46,7 +43,9 @@ public class ConsultService {
     }
 
     public List<Consult> getAllConsults() {
-        Set<String> roles = userService.getCurrentUser().getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+        List<Role> rolesList = new ArrayList<>();
+        rolesList.add(userService.getCurrentUser().getRole());
+        Set<String> roles = rolesList.stream().map(Role::getName).collect(Collectors.toSet());
         if (roles.contains(ROLE_PATIENT)) {
             Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
             return consultRepository.findAllByPatient_Id(patient.getId());

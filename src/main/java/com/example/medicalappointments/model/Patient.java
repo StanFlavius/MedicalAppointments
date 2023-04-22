@@ -29,10 +29,10 @@ public class Patient {
     private String cnp;
 
     @Valid
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.ALL })
     @JoinColumn(name = "FK_USER_ID")
     private User user;
 
-    @OneToMany(mappedBy = "medicalProcedure", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Consult> consults = new ArrayList<>();
 }
