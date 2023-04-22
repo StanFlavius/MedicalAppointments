@@ -159,4 +159,123 @@ public class DoctorControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("http://localhost/login"));
     }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void createDoctor_POST_admin_sucess() throws Exception {
+
+        Doctor doctor = new Doctor();
+        doctor.setInterests("interest");
+        doctor.setMemberIn("memberIn");
+        doctor.setSkill("skill");
+
+        User user = new User();
+        user.setLastName("lastName");
+        user.setFirstName("firstName");
+        user.setUsername("username");
+        user.setEmail("email@email.com");
+        user.setPassword("password");
+
+        mockMvc.perform(post("/doctors/new")
+                        .flashAttr("doctor", doctor)
+                        .flashAttr("user", user))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/doctors"));
+
+        doctor = doctorService.getAllDoctors().stream().filter(doc -> doc.getUser().getUsername().equals("username")).findAny().get();
+        assertEquals("lastName", doctor.getUser().getLastName());
+        assertEquals("firstName", doctor.getUser().getFirstName());
+        assertEquals("email@email.com", doctor.getUser().getEmail());
+
+        assertEquals("interest", doctor.getInterests());
+        assertEquals("memberIn", doctor.getMemberIn());
+        assertEquals("skill", doctor.getSkill());
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void createDoctor_POST_admin_fail() throws Exception {
+
+        Doctor doctor = doctorService.findById(1L);
+        User user = doctor.getUser();
+
+        user.setLastName("1234567");
+        user.setFirstName("98765");
+        user.setUsername("");
+
+        mockMvc.perform(post("/doctors/new")
+                        .flashAttr("doctor", doctor)
+                        .flashAttr("user", user))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/doctors/new"));
+    }
+
+    @Test
+    @WithMockUser(username = "doctor_1", password = "123456", roles = "DOCTOR")
+    public void createDoctor_POST_doctor_fail() throws Exception {
+
+        Doctor doctor = new Doctor();
+        doctor.setInterests("interest");
+        doctor.setMemberIn("memberIn");
+        doctor.setSkill("skill");
+
+        User user = new User();
+        user.setLastName("lastName");
+        user.setFirstName("firstName");
+        user.setUsername("username");
+        user.setEmail("email@email.com");
+        user.setPassword("password");
+
+        mockMvc.perform(post("/doctors/new")
+                        .flashAttr("doctor", doctor)
+                        .flashAttr("user", user))
+                .andExpect(status().isForbidden())
+                .andExpect(forwardedUrl("/access-denied"));
+    }
+
+    @Test
+    @WithMockUser(username = "patient_1", password = "123456", roles = "PATIENT")
+    public void createDoctor_POST_patient_fail() throws Exception {
+
+        Doctor doctor = new Doctor();
+        doctor.setInterests("interest");
+        doctor.setMemberIn("memberIn");
+        doctor.setSkill("skill");
+
+        User user = new User();
+        user.setLastName("lastName");
+        user.setFirstName("firstName");
+        user.setUsername("username");
+        user.setEmail("email@email.com");
+        user.setPassword("password");
+
+        mockMvc.perform(post("/doctors/new")
+                        .flashAttr("doctor", doctor)
+                        .flashAttr("user", user))
+                .andExpect(status().isForbidden())
+                .andExpect(forwardedUrl("/access-denied"));
+    }
+
+    @Test
+    @WithAnonymousUser
+    public void createDoctor_POST_anonymous_fail() throws Exception {
+
+        Doctor doctor = new Doctor();
+        doctor.setInterests("interest");
+        doctor.setMemberIn("memberIn");
+        doctor.setSkill("skill");
+
+        User user = new User();
+        user.setLastName("lastName");
+        user.setFirstName("firstName");
+        user.setUsername("username");
+        user.setEmail("email@email.com");
+        user.setPassword("password");
+
+        mockMvc.perform(post("/doctors/new")
+                        .flashAttr("doctor", doctor)
+                        .flashAttr("user", user))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("http://localhost/login"));
+    }
 }

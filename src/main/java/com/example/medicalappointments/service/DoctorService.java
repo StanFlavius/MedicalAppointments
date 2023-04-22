@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DoctorService {
 
+    private final UserService userService;
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
 
@@ -48,6 +49,11 @@ public class DoctorService {
         doctor.setConsults(doctorInDB.getConsults());
         doctor.setUser(userInDB);
 
+        return doctorRepository.save(doctor);
+    }
+
+    public Doctor createDoctor(Doctor doctor) {
+        userService.saveUser(doctor.getUser());
         return doctorRepository.save(doctor);
     }
 

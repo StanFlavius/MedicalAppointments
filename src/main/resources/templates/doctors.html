@@ -51,6 +51,15 @@
             </td>
         </tr>
     </table>
+
+    <div sec:authorize="hasRole('ADMIN')" class="container">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <a class="btn btn-primary" role="button" th:href="@{'/doctors/new'}" th:method="GET">Add Doctor</a>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
