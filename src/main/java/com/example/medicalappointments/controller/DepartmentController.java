@@ -54,7 +54,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    public String getById(@PathVariable("id") String departmentId, Model model){
+    public String getById(@PathVariable("id") String departmentId, Model model) {
         var department = departmentService.getDepartmentById(Long.valueOf(departmentId));
         model.addAttribute("department", department);
 
@@ -111,6 +111,12 @@ public class DepartmentController {
             }
         }
 
+        return REDIRECT + ALL_DEPARTMENTS;
+    }
+
+    @GetMapping("/{id}/delete")
+    public String deleteDepartment(@PathVariable Long id) {
+        departmentService.deleteDepartmentById(id);
         return REDIRECT + ALL_DEPARTMENTS;
     }
 }

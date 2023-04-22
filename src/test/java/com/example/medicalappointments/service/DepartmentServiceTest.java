@@ -70,6 +70,17 @@ public class DepartmentServiceTest {
         assertEquals(String.format("Department with name %s already exists!", department.getName()), exception.getMessage());
     }
 
+    @Test
+    void deletePatient_success() {
+        Department persistedDepartment = createPersistedDepartment();
+
+        doNothing().when(departmentRepository).deleteById(persistedDepartment.getId());
+
+        departmentService.deleteDepartmentById(persistedDepartment.getId());
+
+        verify(departmentRepository, times(1)).deleteById(persistedDepartment.getId());
+    }
+
     private Department createDepartment() {
         return Department.builder()
                 .name("Neurologie")
