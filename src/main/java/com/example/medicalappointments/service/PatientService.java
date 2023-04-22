@@ -3,6 +3,7 @@ package com.example.medicalappointments.service;
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.exception.NotUniqueException;
 import com.example.medicalappointments.model.Consult;
+import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.User;
 import com.example.medicalappointments.repository.ConsultRepository;
@@ -36,7 +37,8 @@ public class PatientService {
     public void deletePatientById(Long id){
         Patient patient = patientRepository.findById(id).get();
 
-        patientRepository.delete(patient);
+        patientRepository.deleteById(id);
+        userRepository.delete(patient.getUser());
     }
 
     public Patient findById(Long id){
@@ -46,6 +48,7 @@ public class PatientService {
                         .entityType("Patient")
                         .build());
     }
+
     public Patient createPatient(Patient patient) {
         User user = patient.getUser();
         user.setRole(roleService.getRoleByName(ROLE_PATIENT));
@@ -72,5 +75,19 @@ public class PatientService {
                 .orElseThrow(() -> EntityNotFoundException.builder()
                         .entityType("Patient")
                         .build());
+    }
+
+    public Patient saveOrUpdateUser(Patient patient, User user) {
+        Patient patientInDB = findById(patient.getId());
+        User userInDB = patientInDB.getUser();
+
+        userInDB.setFirstName(user.getFirstName());
+        userInDB.setLastName(user.getLastName());
+
+        patient.setCnp(patientInDB.getCnp());
+        userRepository.save(userInDB);
+
+        patient.setUser(userInDB);
+        return patientRepository.save(patient);
     }
 }

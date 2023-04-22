@@ -55,7 +55,7 @@ public class User {
     @JoinColumn(name = "FK_ROLE_ID")
     private Role role;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     private Patient patient;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -83,5 +83,3 @@ public class User {
     @Transient
     private Boolean enabled = true;
 }
-
-
