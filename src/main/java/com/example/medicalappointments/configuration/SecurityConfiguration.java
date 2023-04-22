@@ -4,6 +4,7 @@ import com.example.medicalappointments.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -62,6 +63,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 .antMatchers("/doctors/{^[0-9]+}/edit").hasRole(ADMIN)
                 .antMatchers("/doctors/my-profile").hasRole(DOCTOR)
+                .antMatchers(HttpMethod.POST, "/doctors/new").hasRole(ADMIN)
+                .antMatchers(HttpMethod.GET, "/doctors/new").hasRole(ADMIN)
                 .antMatchers("/doctors/{^[0-9]+}/delete").hasRole(ADMIN)
                 .antMatchers("/doctors/{^[0-9]+}").permitAll()
                 .antMatchers("/doctors").permitAll()

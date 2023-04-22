@@ -19,7 +19,6 @@ import javax.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/patients")
 public class PatientController {
 
     private final PatientService patientService;
@@ -27,14 +26,14 @@ public class PatientController {
     private final static String ALL_PATIENTS = "patients";
     private final static String VIEW_PATIENT = "patient_info";
 
-    @GetMapping
+    @GetMapping("/patients")
     public String getAll(Model model) {
         var patients = patientService.getAllPatients();
         model.addAttribute("patients", patients);
         return ALL_PATIENTS;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/patients/{id}")
     public String getById(@PathVariable("id") String patientId, Model model) {
         var patient = patientService.findById(Long.valueOf(patientId));
         model.addAttribute("patient", patient);
