@@ -2,10 +2,7 @@ package com.example.medicalappointments.service;
 
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.exception.NotUniqueException;
-import com.example.medicalappointments.model.Doctor;
-import com.example.medicalappointments.model.Patient;
-import com.example.medicalappointments.model.Role;
-import com.example.medicalappointments.model.User;
+import com.example.medicalappointments.model.*;
 import com.example.medicalappointments.repository.PatientRepository;
 import com.example.medicalappointments.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -13,12 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 import static com.example.medicalappointments.exception.NotUniqueException.ConflictingField.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +30,9 @@ class PatientServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private DoctorService doctorService;
 
     @Mock
     private RoleService roleService;
@@ -132,6 +134,28 @@ class PatientServiceTest {
         assertTrue(resultedPatients.get(0).getUser().getRole().equals(patientRole));
 
         verify(patientRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void getAllForDoctor_success() {
+        Patient patient = createPatient();
+        Patient persistedPatient = createPersistedPatient(createPatientRole());
+        Doctor persistedDoctor = createPersistedDoctor();
+        Consult persistedConsult = createPersistedConsult();
+        persistedConsult.setPatient(persistedPatient);
+        persistedConsult.setDoctor(persistedDoctor);
+
+        when(userService.getCurrentUser()).thenReturn(persistedDoctor.getUser());
+        when(doctorService.findByUserId(any())).thenReturn(persistedDoctor);
+
+        when(patientRepository.findPatientsForDoctor(1L)).thenReturn(List.of(patient));
+
+        List<Patient> resultedPatients = patientService.getAllPatients();
+
+        assertEquals(1, resultedPatients.size());
+        assertEquals(resultedPatients.get(0).getId(), patient.getId());
+        assertEquals(resultedPatients.get(0).getUser().getId(), patient.getUser().getId());
+        verify(patientRepository, times(1)).findPatientsForDoctor(1L);
     }
 
     @Test
@@ -249,4 +273,40 @@ class PatientServiceTest {
         return patientRole;
     }
 
+    private Consult createConsult() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 1);
+        Date date = calendar.getTime();
+        date.setHours(18);
+
+        Consult consult = new Consult();
+        consult.setDate(date);
+        consult.setDoctor(new Doctor());
+        return consult;
+    }
+
+    private Consult createPersistedConsult() {
+        Consult consult = createConsult();
+        consult.setId(1L);
+        return consult;
+    }
+
+    private Role createDoctorRole() {
+        Role doctorRole = new Role();
+        doctorRole.setName(ROLE_DOCTOR);
+        return doctorRole;
+    }
+    private Doctor createPersistedDoctor() {
+        User user = new User();
+        user.setUsername("test-username");
+        user.setPassword("test-pass");
+
+        Doctor doctor = new Doctor();
+        doctor.setId(1L);
+        doctor.setUser(user);
+        doctor.getUser().setRole(createDoctorRole());
+
+        return doctor;
+    }
 }

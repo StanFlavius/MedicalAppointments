@@ -1,6 +1,5 @@
 package com.example.medicalappointments.controller;
 
-import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.Patient;
 import com.example.medicalappointments.model.User;
 import com.example.medicalappointments.service.PatientService;
@@ -85,6 +84,24 @@ class PatientControllerTest {
         mockMvc.perform(get("/patients"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("patients"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "doctor_1", password = "123456", roles = "DOCTOR")
+    public void showPatients_doctor_success() throws Exception {
+        mockMvc.perform(get("/patients"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("patients"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "doctor_1", password = "123456", roles = "DOCTOR")
+    public void showPatientInfo_doctor_success() throws Exception {
+        mockMvc.perform(get("/patients/{1}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("patient_info"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"));
     }
 
