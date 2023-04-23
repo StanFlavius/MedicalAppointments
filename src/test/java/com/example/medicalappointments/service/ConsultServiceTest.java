@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.print.Doc;
 import java.util.*;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.*;
@@ -130,6 +131,27 @@ class ConsultServiceTest {
         assertTrue(resultedConsults.get(0).getPatient().getUser().getRole().equals(patient.getUser().getRole()));
 
         verify(consultRepository, times(1)).findAllByPatient_Id(patient.getId());
+        verify(consultRepository, never()).findAll();
+    }
+
+    @Test
+    void getAllConsults_doctor_success() {
+        Doctor doctor = createPersistedDoctor();
+        Consult consult = createPersistedConsult();
+        consult.setDoctor(doctor);
+
+        when(userService.getCurrentUser()).thenReturn(User.builder().role(doctor.getUser().getRole()).build());
+        when(doctorService.findByUserId(userService.getCurrentUser().getId())).thenReturn(doctor);
+        when(consultRepository.findAllByDoctor_Id(doctor.getId())).thenReturn(List.of(consult));
+
+        List<Consult> resultedConsults = consultService.getAllConsults();
+
+        assertEquals(1, resultedConsults.size());
+        assertEquals(resultedConsults.get(0).getId(), consult.getId());
+        assertEquals(resultedConsults.get(0).getDoctor(), doctor);
+        assertTrue(resultedConsults.get(0).getDoctor().getUser().getRole().equals(doctor.getUser().getRole()));
+
+        verify(consultRepository, times(1)).findAllByDoctor_Id(doctor.getId());
         verify(consultRepository, never()).findAll();
     }
 
