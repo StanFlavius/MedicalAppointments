@@ -36,7 +36,7 @@
                 <th style="position: sticky; top: 0; background-color: white;">Diagnose</a></th>
                 <th style="position: sticky; top: 0; background-color: white;">Details</th>
                 <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasAnyRole('PATIENT', 'DOCTOR')">Edit</th>
-                <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasAnyRole('PATIENT', 'DOCTOR')">Delete</th>
+                <th style="position: sticky; top: 0; background-color: white;" sec:authorize="hasAnyRole('ADMIN', 'PATIENT', 'DOCTOR')">Delete</th>
             </tr>
             </thead>
             <tr th:each="consult: ${futureConsults}">
@@ -57,7 +57,7 @@
                         Edit
                     </a>
                 </td>
-                <td sec:authorize="hasAnyRole('PATIENT', 'DOCTOR')">
+                <td sec:authorize="hasAnyRole('ADMIN','PATIENT', 'DOCTOR')">
                     <form th:object="${consult}" th:action="@{/consults/{id}/delete(id=${consult.id})}"
                           th:method="GET">
                         <button class="btn btn-danger">Delete</button>
