@@ -35,7 +35,7 @@ public class DepartmentControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "pacient_1", roles={"PATIENT"})
+    @WithMockUser(username = "pacient_1", roles = {"PATIENT"})
     public void showDepartmentInfo_pacient_user_success() throws Exception {
         mockMvc.perform(get("/departments/{1}", "1"))
                 .andExpect(status().isOk())
@@ -56,12 +56,12 @@ public class DepartmentControllerTest {
     @WithAnonymousUser
     void getAllByUnauthenticatedUser_success() throws Exception {
         mockMvc.perform(get("/departments")
-                .flashAttr("department", Collections.singletonList(createDepartment())))
+                        .flashAttr("department", Collections.singletonList(createDepartment())))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "pacient_1", roles={"PATIENT"})
+    @WithMockUser(username = "pacient_1", roles = {"PATIENT"})
     void getAllByPatientUser_success() throws Exception {
         mockMvc.perform(get("/departments")
                         .flashAttr("department", Collections.singletonList(createDepartment())))
@@ -69,7 +69,7 @@ public class DepartmentControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_1", roles="ADMIN")
+    @WithMockUser(username = "admin_1", roles = "ADMIN")
     void getAllByAdmin_success() throws Exception {
         mockMvc.perform(get("/departments")
                         .flashAttr("department", Collections.singletonList(createDepartment())))
@@ -77,7 +77,7 @@ public class DepartmentControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_1", roles={"ADMIN"})
+    @WithMockUser(username = "admin_1", roles = {"ADMIN"})
     void create_success_byAdmin() throws Exception {
         Department department = createDepartment();
 
@@ -88,7 +88,7 @@ public class DepartmentControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_1", roles={"ADMIN"})
+    @WithMockUser(username = "admin_1", roles = {"ADMIN"})
     void showCreatePage_byAdmin() throws Exception {
         mockMvc.perform(get("/departments/new"))
                 .andExpect(status().isOk())
@@ -97,7 +97,7 @@ public class DepartmentControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_1", roles={"ADMIN"})
+    @WithMockUser(username = "admin_1", roles = {"ADMIN"})
     void create_notValidField_failure() throws Exception {
         Department department = createDepartment();
         department.setName("");
@@ -109,7 +109,7 @@ public class DepartmentControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_1", roles={"ADMIN"})
+    @WithMockUser(username = "admin_1", roles = {"ADMIN"})
     void update_success_byAdmin() throws Exception {
         Department department = createDepartment();
         department.setId(1L);
@@ -122,7 +122,20 @@ public class DepartmentControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_1", roles={"ADMIN"})
+    @WithMockUser(username = "doctor_1", roles = "DOCTOR")
+    void update_fail_byDoctor() throws Exception {
+        Department department = createDepartment();
+        department.setId(1L);
+        department.setName("Oftalmologie");
+
+        mockMvc.perform(post("/departments")
+                        .flashAttr("department", department))
+                .andExpect(status().isForbidden())
+                .andExpect(forwardedUrl("/access-denied"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", roles = {"ADMIN"})
     void showUpdatePage_byAdmin() throws Exception {
         mockMvc.perform(get("/departments/1/edit"))
                 .andExpect(status().isOk())
@@ -131,16 +144,16 @@ public class DepartmentControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_1", roles={"ADMIN"})
+    @WithMockUser(username = "admin_1", roles = {"ADMIN"})
     void update_notValidField_failure() throws Exception {
         Department department = createDepartment();
-        department.setId(2L);
+        department.setId(1L);
         department.setName("Neurologie");
 
         mockMvc.perform(post("/departments")
                         .flashAttr("department", department))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/departments/2/edit"))
+                .andExpect(view().name("redirect:/departments/1/edit"))
                 .andExpect(flash().attribute("error_department", "Department with name Neurologie already exists!"));
     }
 

@@ -54,6 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/departments/new", "/departments/{^[0-9]+}/edit").hasRole(ADMIN)
                 .antMatchers("/departments/{^[0-9]+}/delete").hasRole(ADMIN)
                 .antMatchers("/departments/{^[0-9]+}").permitAll()
+                .antMatchers(HttpMethod.POST, "/departments").hasRole(ADMIN)
                 .antMatchers("/departments").permitAll()
 
                 .antMatchers("/patients/new", "/patients/{^[0-9]+}/edit").hasRole(ADMIN)
@@ -80,6 +81,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/consults/{^[0-9]+}").hasAnyRole(DOCTOR, ADMIN, PATIENT)
                 .antMatchers("/consults/my-consults").hasRole(DOCTOR)
                 .antMatchers("/consults").hasAnyRole(DOCTOR, ADMIN, PATIENT)
+
+                .antMatchers("/procedures/**").hasRole(ADMIN)
 
                 .antMatchers("/**/bootstrap/**").permitAll()
 

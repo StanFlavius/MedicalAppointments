@@ -61,13 +61,15 @@ public class DepartmentServiceTest {
 
     @Test
     void savePatient_notUniqueName_exception() {
-        Department department = createDepartment();
+        Department department1 = createPersistedDepartment();
+        Department department2 = createPersistedDepartment();
+        department2.setId(2L);
 
-        when(departmentRepository.findDepartmentByName(department.getName())).thenReturn(Optional.of(department));
+        when(departmentRepository.findDepartmentByName(department1.getName())).thenReturn(Optional.of(department1));
 
-        CustomException exception = assertThrows(CustomException.class, () -> departmentService.saveDepartment(department));
+        CustomException exception = assertThrows(CustomException.class, () -> departmentService.saveDepartment(department2));
 
-        assertEquals(String.format("Department with name %s already exists!", department.getName()), exception.getMessage());
+        assertEquals(String.format("Department with name %s already exists!", department2.getName()), exception.getMessage());
     }
 
     @Test
