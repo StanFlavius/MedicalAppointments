@@ -1,12 +1,9 @@
 package com.example.medicalappointments.service;
 
 import com.example.medicalappointments.model.Department;
-import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.MedicalProcedure;
-import com.example.medicalappointments.model.Role;
-import com.example.medicalappointments.repository.DepartmentRepository;
-import com.example.medicalappointments.repository.DoctorRepository;
 import com.example.medicalappointments.repository.MedicalProcedureRepository;
+import com.example.medicalappointments.service.interfaces.DepartmentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,7 +22,7 @@ public class MedicalProcedureTest {
     private MedicalProcedureRepository medicalProcedureRepository;
 
     @Mock
-    private DepartmentRepository departmentRepository;
+    private DepartmentService departmentService;
 
     @InjectMocks
     private MedicalProcedureService medicalProcedureService;
@@ -36,8 +32,8 @@ public class MedicalProcedureTest {
         Department department = createDepartment();
         MedicalProcedure medicalProcedure = createProcedure(department);
 
-        when(departmentRepository.getById(10L)).thenReturn(department);
-        when(medicalProcedureRepository.findByDepartment(department)).thenReturn(List.of(medicalProcedure));
+        when(departmentService.getDepartmentById(10L)).thenReturn(department);
+        when(medicalProcedureRepository.findByDepartment(any())).thenReturn(List.of(medicalProcedure));
 
         List<MedicalProcedure> resultedProcedures = medicalProcedureService.getProceduresByDepartment(Long.valueOf("10"));
 
@@ -48,10 +44,29 @@ public class MedicalProcedureTest {
         assertEquals(resultedProcedures.get(0).getPrice(), medicalProcedure.getPrice());
 
         verify(medicalProcedureRepository, times(1)).findByDepartment(department);
-        verify(departmentRepository, times(1)).getById(10L);
+        verify(departmentService, times(1)).getDepartmentById(10L);
     }
 
-    private Department createDepartment(){
+    @Test
+    public void createProcedure() {
+        Department department = createDepartment();
+        MedicalProcedure medicalProcedure = createProcedure(department);
+
+        when(departmentService.getDepartmentById(10L)).thenReturn(department);
+        when(medicalProcedureRepository.save(any())).thenReturn(medicalProcedure);
+
+        MedicalProcedure savedProcedure = medicalProcedureService.save(department.getId(), medicalProcedure);
+
+        assertEquals("EKG", savedProcedure.getName());
+        assertEquals(100L, savedProcedure.getPrice().longValue());
+        assertEquals(10L, savedProcedure.getDepartment().getId());
+
+        verify(departmentService, times(1)).getDepartmentById(10L);
+        verify(medicalProcedureRepository, times(1)).save(medicalProcedure);
+    }
+
+
+    private Department createDepartment() {
         Department department = new Department();
         department.setId(10L);
         department.setName("Neurologie");
@@ -59,7 +74,7 @@ public class MedicalProcedureTest {
         return department;
     }
 
-    private MedicalProcedure createProcedure(Department department){
+    private MedicalProcedure createProcedure(Department department) {
         MedicalProcedure medicalProcedure = new MedicalProcedure();
         medicalProcedure.setId(1L);
         medicalProcedure.setName("EKG");

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Department</title>
@@ -16,7 +16,12 @@
         <div class="panel panel-primary">
 
             <div class="panel-heading" style="padding-top:15px;">
-                <h2 class="panel-title">Add/Edit department</h2>
+                <h2 th:if="${department.id != null}" class="panel-title">
+                    Edit department
+                </h2>
+                <h2 th:unless="${department.id != null}" class="panel-title">
+                    Add department
+                </h2>
             </div>
 
             <br>
@@ -38,6 +43,36 @@
 
                 <br>
 
+                <div class="panel-heading" style="padding-top:15px;">
+                    <h2 class="panel-title">Medical procedures</h2>
+                </div>
+
+                <table class="table table-striped table-hover mt-4">
+
+                    <thead class="thead-inverse">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tr th:each="procedure: ${department.procedures}">
+
+                        <td th:text="${procedure.id}"></td>
+                        <td th:text="${procedure.name}"></td>
+                        <td th:text="${procedure.price}"></td>
+                        <td sec:authorize="hasRole('ADMIN')">
+                            <a class="btn btn-danger" href="#" th:href="@{'/procedures/{id}/delete'(id=${procedure.id})}"
+                               role="button">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+
+                <br>
+
                 <div class="row">
                     <div class="col-md-7 ml-md-auto">
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -48,3 +83,77 @@
         </div>
     </div>
 </form>
+
+<br>
+
+<div class="container" style="padding-left: 30px">
+
+    <form th:if="${department.id != null}" th:object="${newProcedure}"
+          th:action="@{/procedures/{departmentId}(departmentId=${department.id})}" method="post">
+        <input type="hidden" th:field="*{id}"/>
+        <div class="col-md-3 form-group">
+
+            <label>Procedure name:</label>
+            <input id="procedureName" type="text" class="form-control" th:field="${newProcedure.name}"/>
+            <label th:if="${#fields.hasErrors('name')}" th:errors="${newProcedure.name}" type="error"
+                   class="error text-danger">
+                Error
+            </label>
+        </div>
+
+        <div class="col-md-3 form-group">
+            <label>Procedure price:</label>
+            <input id="procedurePrice" type="text" class="form-control" th:field="${newProcedure.price}"/>
+            <label th:if="${#fields.hasErrors('price')}" th:errors="${newProcedure.price}" type="error"
+                   class="error text-danger">
+                Error
+            </label>
+        </div>
+
+        <br>
+
+        <div class="row">
+            <div class="col-md-7 ml-md-auto">
+                <button type="submit" class="btn btn-primary">Add procedure</button>
+            </div>
+        </div>
+    </form>
+
+    <form th:unless="${department.id != null}" th:object="${newProcedure}" th:action="@{/departments}" method="post">
+        <input type="hidden" th:field="*{id}"/>
+        <div class="col-md-3 form-group">
+
+            <label>Procedure name:</label>
+            <input id="procedureName" type="text" class="form-control" th:field="${newProcedure.name}"/>
+            <label th:if="${#fields.hasErrors('name')}" th:errors="${name}" type="error"
+                   class="error text-danger">
+                Error
+            </label>
+        </div>
+
+        <div class="col-md-3 form-group">
+            <label>Procedure price:</label>
+            <input id="procedurePrice" type="text" class="form-control" th:field="${newProcedure.price}"/>
+            <label th:if="${#fields.hasErrors('price')}" th:errors="${price}" type="error"
+                   class="error text-danger">
+                Error
+            </label>
+        </div>
+
+        <br>
+
+        <div class="row">
+            <div class="col-md-7 ml-md-auto">
+                <button type="submit" class="btn btn-primary">Add procedure</button>
+            </div>
+        </div>
+
+        <!--    <div th:id="'btnAddProcedure'" class="btn btn-primary" onclick="btnAddProcedure()">Add procedure</div>-->
+        <!--    <button class="btn btn-secondary">Delete</button>-->
+
+    </form>
+
+</div>
+
+</body>
+</html>

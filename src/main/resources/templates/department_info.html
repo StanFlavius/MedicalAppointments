@@ -70,7 +70,7 @@
                         <th>Price</th>
                     </tr>
                     </thead>
-                    <tr th:each="procedure: ${procedures}">
+                    <tr th:each="procedure: ${department.procedures}">
 
                         <td th:text="${procedure.id}"></td>
                         <td th:text="${procedure.name}"></td>

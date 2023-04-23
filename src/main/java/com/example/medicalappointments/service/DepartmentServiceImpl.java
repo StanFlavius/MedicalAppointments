@@ -37,7 +37,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department saveDepartment(Department department) {
 
         Optional<Department> departmentByName = getDepartmentByName(department.getName());
-        if (departmentByName.isPresent()) {
+        if (departmentByName.isPresent() && !departmentByName.get().getId().equals(department.getId())) {
             throw new CustomException(String.format("Department with name %s already exists!", department.getName()));
         }
 

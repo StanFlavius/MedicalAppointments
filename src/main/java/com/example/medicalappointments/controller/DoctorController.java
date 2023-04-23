@@ -88,7 +88,6 @@ public class DoctorController {
     }
 
     @PostMapping("/new")
-    @Secured(ROLE_ADMIN)
     public String createDoctor(@ModelAttribute("user") @Valid User user, BindingResult bindingResultUser,
                                @ModelAttribute("doctor") @Valid Doctor doctor, BindingResult bindingResultDoctor,
                                @ModelAttribute("password") String password, RedirectAttributes attr) {

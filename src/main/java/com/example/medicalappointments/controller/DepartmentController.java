@@ -2,6 +2,7 @@ package com.example.medicalappointments.controller;
 
 import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.model.Department;
+import com.example.medicalappointments.model.MedicalProcedure;
 import com.example.medicalappointments.service.DepartmentServiceImpl;
 import com.example.medicalappointments.service.DoctorService;
 import com.example.medicalappointments.service.MedicalProcedureService;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @Setter
@@ -50,6 +53,14 @@ public class DepartmentController {
         if (!model.containsAttribute("department")) {
             model.addAttribute("department", new Department());
         }
+
+        if (!model.containsAttribute("procedures")) {
+            model.addAttribute("procedures", new ArrayList<>());
+        }
+
+        if (!model.containsAttribute("newProcedure")) {
+            model.addAttribute("newProcedure", new MedicalProcedure());
+        }
         return ADD_EDIT_DEPARTMENT;
     }
 
@@ -73,7 +84,61 @@ public class DepartmentController {
         if (!model.containsAttribute("department")) {
             model.addAttribute("department", department);
         }
+
+        if (!model.containsAttribute("procedures")) {
+            List<MedicalProcedure> procedures = medicalProcedureService.getProceduresByDepartment(Long.valueOf(departmentId));
+            model.addAttribute("procedures", procedures);
+        }
+
+        if (!model.containsAttribute("newProcedure")) {
+            model.addAttribute("newProcedure", new MedicalProcedure());
+        }
+
         return ADD_EDIT_DEPARTMENT;
+    }
+
+    @PostMapping("/{id}/procedures")
+    public String addProcedure(@PathVariable("id") String departmentId,
+                               @ModelAttribute("department") @Valid Department department, BindingResult bindingResultDepartment,
+                               @ModelAttribute("newProcedure") @Valid MedicalProcedure newProcedure, BindingResult bindingResultNewProcedure,
+                               RedirectAttributes attr) {
+        if (bindingResultDepartment.hasErrors() || bindingResultNewProcedure.hasErrors()) {
+            log.info("Model binding has errors!");
+
+            attr.addFlashAttribute(BINDING_RESULT_PATH + "department", bindingResultDepartment);
+            attr.addFlashAttribute("department", department);
+
+            attr.addFlashAttribute(BINDING_RESULT_PATH + "newProcedure", bindingResultNewProcedure);
+            attr.addFlashAttribute("newProcedure", newProcedure);
+
+            if (department.getId() != null) {
+                log.info(String.format("Redirected back to endpoint %s", ALL_DEPARTMENTS + "/" + department.getId() + "/edit"));
+                return REDIRECT + ALL_DEPARTMENTS + "/" + department.getId() + "/edit";
+            } else {
+                log.info(String.format("Redirected back to endpoint %s", ALL_DEPARTMENTS + "/new"));
+                return REDIRECT + ALL_DEPARTMENTS + "/new";
+            }
+        }
+
+        try {
+            departmentService.saveDepartment(department);
+        } catch (CustomException e) {
+            log.info("Error when saving into database! Error message = " + e.getMessage());
+
+            attr.addFlashAttribute(BINDING_RESULT_PATH + "department", bindingResultDepartment);
+            attr.addFlashAttribute("department", department);
+            attr.addFlashAttribute("error_department", e.getMessage());
+
+            if (department.getId() == null) {
+                log.info(String.format("Redirected back to endpoint %s", ALL_DEPARTMENTS + "/new"));
+                return REDIRECT + ALL_DEPARTMENTS + "/new";
+            } else {
+                log.info(String.format("Redirected back to endpoint %s", ALL_DEPARTMENTS + "/" + department.getId() + "/edit"));
+                return REDIRECT + ALL_DEPARTMENTS + "/" + department.getId() + "/edit";
+            }
+        }
+
+        return REDIRECT + ALL_DEPARTMENTS;
     }
 
     @PostMapping
