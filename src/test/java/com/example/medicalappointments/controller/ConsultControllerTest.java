@@ -283,6 +283,53 @@ class ConsultControllerTest {
                 .andExpect(flash().attribute("error_date", "The time must be in the working hours!"));
     }
 
+
+    @Test
+    @WithMockUser(username = "doctor_1", password = "123456",roles={"DOCTOR"})
+    void showUpdatePage_bydoctor() throws Exception {
+        mockMvc.perform(get("/consults/1/edit"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("consult_form"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "doctor_1", password = "123456",roles={"DOCTOR"})
+    void update_success_byDoctor() throws Exception {
+        Consult consult = createConsultAsDoctor();
+        consult.setId(1L);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 2);
+        Date date = calendar.getTime();
+        date.setHours(16);
+        consult.setDate(date);
+
+        mockMvc.perform(post("/consults")
+                        .flashAttr("consult", consult))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/consults"));
+    }
+
+    @Test
+    @WithMockUser(username = "doctor_1", password = "123456",roles={"DOCTOR"})
+    void update_notValidField_failure_byDoctor() throws Exception {
+        Consult consult = createConsultAsDoctor();
+        consult.setId(1L);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 2);
+        Date date = calendar.getTime();
+        date.setHours(19);
+        consult.setDate(date);
+
+        mockMvc.perform(post("/consults")
+                        .flashAttr("consult", consult))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/consults/1/edit"))
+                .andExpect(flash().attribute("error_date", "The time must be in the working hours!"));
+    }
+
     private Consult createConsultAsPatient() {
         Doctor doctor = new Doctor();
         doctor.setId(1L);

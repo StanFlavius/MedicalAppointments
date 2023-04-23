@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import javax.print.Doc;
 import javax.transaction.Transactional;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,7 +37,7 @@ public class ConsultService {
     private String emailSenderPassword;
 
     @Transactional
-    public Consult saveConsult(Consult consult) {
+    public Consult saveOrUpdateConsult(Consult consult) {
         if (consult.getDate().before(new Date())) {
             throw new CustomException("Date must be in the future!");
         }
