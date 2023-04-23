@@ -75,7 +75,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/medications").permitAll()
 
                 .antMatchers("/consults/{^[0-9]+}/edit").hasAnyRole(DOCTOR, PATIENT)
-                .antMatchers("/consults/{^[0-9]+}/delete").hasAnyRole(ADMIN, PATIENT)
+                .antMatchers("/consults/{^[0-9]+}/delete").hasAnyRole(ADMIN, PATIENT, DOCTOR)
                 .antMatchers("/consults/new").hasAnyRole(DOCTOR, ADMIN, PATIENT)
                 .antMatchers("/consults/{^[0-9]+}").hasAnyRole(DOCTOR, ADMIN, PATIENT)
                 .antMatchers("/consults/my-consults").hasRole(DOCTOR)
