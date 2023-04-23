@@ -190,6 +190,23 @@ class ConsultControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void deleteConsult_admin_success() throws Exception {
+        mockMvc.perform(get("/consults/{1}/delete", "2"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/consults"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_1", password = "123456", roles = "ADMIN")
+    public void deleteConsult_consultNotFound_admin_error() throws Exception {
+        mockMvc.perform(get("/consults/{1}/delete", "999999"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("err_not_found"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
     @WithMockUser(username = "pacient_1", password = "123456", roles = "PATIENT")
     public void deleteConsult_consultNotFound_patient_error() throws Exception {
         mockMvc.perform(get("/consults/{1}/delete", "999999"))
