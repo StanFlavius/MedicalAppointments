@@ -17,8 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
-import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
+import static com.example.medicalappointments.configuration.SecurityConfiguration.*;
 import static com.example.medicalappointments.exception.NotUniqueException.ConflictingField.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -125,6 +124,7 @@ class PatientServiceTest {
         Patient patient = createPersistedPatient(patientRole);
 
         when(patientRepository.findAll()).thenReturn(List.of(patient));
+        when(userService.getCurrentUser()).thenReturn(User.builder().role(createAdminRole()).build());
 
         List<Patient> resultedPatients = patientService.getAllPatients();
 
@@ -308,5 +308,11 @@ class PatientServiceTest {
         doctor.getUser().setRole(createDoctorRole());
 
         return doctor;
+    }
+
+    private Role createAdminRole() {
+        Role adminRole = new Role();
+        adminRole.setName(ROLE_ADMIN);
+        return adminRole;
     }
 }
