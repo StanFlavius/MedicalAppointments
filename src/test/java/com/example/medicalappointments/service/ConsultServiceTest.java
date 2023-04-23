@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.print.Doc;
 import java.util.*;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.*;
@@ -58,7 +57,7 @@ class ConsultServiceTest {
         when(consultRepository.save(consult)).thenReturn(persistedConsult);
         doNothing().when(emailSenderService).sendConsultAssignmentEmail(persistedDoctor.getUser(), persistedConsult);
 
-        Consult resultedConsult = consultService.saveConsult(consult);
+        Consult resultedConsult = consultService.saveOrUpdateConsult(consult);
 
         assertEquals(persistedConsult.getId(), resultedConsult.getId());
         assertEquals(persistedPatient, consult.getPatient());
@@ -79,7 +78,7 @@ class ConsultServiceTest {
         when(consultRepository.findConsultsInTimeRange(any(), any(), any())).thenReturn(Collections.emptyList());
         when(consultRepository.save(consult)).thenReturn(persistedConsult);
 
-        Consult resultedConsult = consultService.saveConsult(consult);
+        Consult resultedConsult = consultService.saveOrUpdateConsult(consult);
 
         assertEquals(persistedConsult.getId(), resultedConsult.getId());
         assertEquals(persistedDoctor, consult.getDoctor());
@@ -93,7 +92,7 @@ class ConsultServiceTest {
         Consult consult = createConsult();
         consult.setDate(new Date(System.currentTimeMillis() - 1000));
 
-        assertThrows(CustomException.class, () -> consultService.saveConsult(consult));
+        assertThrows(CustomException.class, () -> consultService.saveOrUpdateConsult(consult));
     }
 
     @Test
@@ -102,7 +101,7 @@ class ConsultServiceTest {
 
         when(consultRepository.findConsultsInTimeRange(any(), any(), any())).thenReturn(Collections.singletonList(new Consult()));
 
-        assertThrows(CustomException.class, () -> consultService.saveConsult(consult));
+        assertThrows(CustomException.class, () -> consultService.saveOrUpdateConsult(consult));
     }
 
     @Test
@@ -110,7 +109,7 @@ class ConsultServiceTest {
         Consult consult = createConsult();
         consult.getDate().setHours(22);
 
-        assertThrows(CustomException.class, () -> consultService.saveConsult(consult));
+        assertThrows(CustomException.class, () -> consultService.saveOrUpdateConsult(consult));
     }
 
     @Test

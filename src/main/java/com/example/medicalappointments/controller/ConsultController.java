@@ -138,7 +138,7 @@ public class ConsultController {
     }
 
     @PostMapping
-    public String createConsult(@ModelAttribute("consult") @Valid Consult consult, BindingResult bindingResult, RedirectAttributes attr) {
+    public String createOrUpdateConsult(@ModelAttribute("consult") @Valid Consult consult, BindingResult bindingResult, RedirectAttributes attr) {
         if (bindingResult.hasErrors()) {
             attr.addFlashAttribute(BINDING_RESULT_PATH + "consult", bindingResult);
             attr.addFlashAttribute("consult", consult);
@@ -170,7 +170,7 @@ public class ConsultController {
         }
 
         try {
-            consultService.saveConsult(consult);
+            consultService.saveOrUpdateConsult(consult);
         } catch (CustomException e) {
             log.info("Error when creating a new consult! Error message = " + e.getMessage());
 
