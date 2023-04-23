@@ -1,6 +1,7 @@
 package com.example.medicalappointments.controller;
 
 import com.example.medicalappointments.model.Consult;
+import com.example.medicalappointments.model.Department;
 import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.Patient;
 import org.junit.jupiter.api.Test;
@@ -234,6 +235,52 @@ class ConsultControllerTest {
                         .flashAttr("consult", consult))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/consults/new"));
+    }
+
+    @Test
+    @WithMockUser(username = "pacient_1", password = "123456",roles={"PATIENT"})
+    void showUpdatePage_byPatient() throws Exception {
+        mockMvc.perform(get("/consults/1/edit"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("consult_form"))
+                .andExpect(content().contentType("text/html;charset=UTF-8"));
+    }
+
+    @Test
+    @WithMockUser(username = "pacient_1", password = "123456",roles={"PATIENT"})
+    void update_success_byPatient() throws Exception {
+        Consult consult = createConsultAsPatient();
+        consult.setId(1L);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 2);
+        Date date = calendar.getTime();
+        date.setHours(14);
+        consult.setDate(date);
+
+        mockMvc.perform(post("/consults")
+                        .flashAttr("consult", consult))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/consults"));
+    }
+
+    @Test
+    @WithMockUser(username = "pacient_1", password = "123456",roles={"PATIENT"})
+    void update_notValidField_failure_byPatient() throws Exception {
+        Consult consult = createConsultAsPatient();
+        consult.setId(1L);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 2);
+        Date date = calendar.getTime();
+        date.setHours(19);
+        consult.setDate(date);
+
+        mockMvc.perform(post("/consults")
+                        .flashAttr("consult", consult))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/consults/1/edit"))
+                .andExpect(flash().attribute("error_date", "The time must be in the working hours!"));
     }
 
     private Consult createConsultAsPatient() {

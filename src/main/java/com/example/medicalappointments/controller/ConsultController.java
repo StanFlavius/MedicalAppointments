@@ -84,7 +84,41 @@ public class ConsultController {
             return REDIRECT + ALL_CONSULTS + "/new";
         }
 
+        model.addAttribute("allPatients", allPatients);
+        model.addAttribute("allDepartments", allDepartments);
+        model.addAttribute("allDoctors", allDoctors);
+        model.addAttribute("doctorsDepartments", getDoctorsDepartments(allDoctors));
+        return "consult_form";
+    }
 
+    @GetMapping("/{id}/edit")
+    public String editConsult(@PathVariable("id") String consultId, Model model) {
+        List<Department> allDepartments = departmentService.getAllDepartments();
+        List<Doctor> allDoctors = doctorService.getAllDoctors();
+        List<Patient> allPatients = patientService.getAllPatients();
+        List<SelectedMedication> selectedMedications;
+        Consult consult;
+
+        /* First time display, no validation failed before */
+        if (!model.containsAttribute("consult")) {
+            consult = consultService.getConsultById(Long.valueOf(consultId));
+            var containedMedicationIds = consult.getMedications() == null ? new ArrayList<Long>() : consult.getMedications().stream().map(Medication::getId).collect(Collectors.toList());
+            selectedMedications = medicationService.getAllMedications().stream().map(med -> {
+                var isContained = containedMedicationIds.contains(med.getId());
+                return new SelectedMedication(med, isContained);
+            }).collect(Collectors.toList());
+            model.addAttribute("consult", consult);
+        } else {
+            consult = (Consult) model.getAttribute("consult");
+            var containedMedicationIds = consult.getMedications() == null ? new ArrayList<Long>() : consult.getMedications().stream().map(Medication::getId).collect(Collectors.toList());
+            selectedMedications = medicationService.getAllMedications().stream().map(med -> {
+                var isContained = containedMedicationIds.contains(med.getId());
+                return new SelectedMedication(med, isContained);
+            }).collect(Collectors.toList());
+            consult.setMedications(medicationService.findMedicationsByIdContains(containedMedicationIds));
+        }
+
+        model.addAttribute("selectedMedications", selectedMedications);
         model.addAttribute("allPatients", allPatients);
         model.addAttribute("allDepartments", allDepartments);
         model.addAttribute("allDoctors", allDoctors);
@@ -108,19 +142,31 @@ public class ConsultController {
         if (bindingResult.hasErrors()) {
             attr.addFlashAttribute(BINDING_RESULT_PATH + "consult", bindingResult);
             attr.addFlashAttribute("consult", consult);
-            return REDIRECT + ALL_CONSULTS + "/new";
+            if (consult.getId() != null) {
+                return REDIRECT + ALL_CONSULTS + "/" + consult.getId() + "/edit";
+            } else {
+                return REDIRECT + ALL_CONSULTS + "/new";
+            }
         }
 
         if (userService.hasRole(ROLE_PATIENT) && (consult.getDoctor() == null || consult.getDoctor().getId() == null)) {
             attr.addFlashAttribute("error_doctor", "A doctor must be selected!");
             attr.addFlashAttribute("consult", consult);
-            return REDIRECT + ALL_CONSULTS + "/new";
+            if (consult.getId() != null) {
+                return REDIRECT + ALL_CONSULTS + "/" + consult.getId() + "/edit";
+            } else {
+                return REDIRECT + ALL_CONSULTS + "/new";
+            }
         }
 
         if (userService.hasRole(ROLE_DOCTOR) && (consult.getPatient() == null || consult.getPatient().getId() == null)) {
             attr.addFlashAttribute("error_patient", "A patient must be selected!");
             attr.addFlashAttribute("consult", consult);
-            return REDIRECT + ALL_CONSULTS + "/new";
+            if (consult.getId() != null) {
+                return REDIRECT + ALL_CONSULTS + "/" + consult.getId() + "/edit";
+            } else {
+                return REDIRECT + ALL_CONSULTS + "/new";
+            }
         }
 
         try {
@@ -132,10 +178,15 @@ public class ConsultController {
             attr.addFlashAttribute("consult", consult);
             attr.addFlashAttribute("error_date", e.getMessage());
 
-            return REDIRECT + ALL_CONSULTS + "/new";
+            if (consult.getId() != null) {
+                return REDIRECT + ALL_CONSULTS + "/" + consult.getId() + "/edit";
+            } else {
+                return REDIRECT + ALL_CONSULTS + "/new";
+            }
         }
         return REDIRECT + ALL_CONSULTS;
     }
+
 
     @GetMapping
     public String getAll(Model model) {
