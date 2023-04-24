@@ -67,15 +67,6 @@ public class PatientService {
     }
 
     public List<Patient> getAllPatients() {
-        List<Role> rolesList = new ArrayList<>();
-        rolesList.add(userService.getCurrentUser().getRole());
-        Set<String> roles = rolesList.stream().map(Role::getName).collect(Collectors.toSet());
-        if (roles.contains(ROLE_DOCTOR)) {
-            Doctor doctor = doctorService.findByUserId(userService.getCurrentUser().getId());
-            List<Patient> patients = patientRepository.findPatientsForDoctor(doctor.getId());
-            return patients.stream().distinct()
-                    .collect(Collectors.toList());
-        }
         return patientRepository.findAll();
     }
 
