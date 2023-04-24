@@ -15,7 +15,7 @@
             <ul class="nav navbar-nav">
                 <li><a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/' ? 'active':''}" th:href="@{/}">Home</a></li>
 
-                <li sec:authorize="hasAnyRole('ADMIN')">
+                <li sec:authorize="hasAnyRole('ADMIN', 'DOCTOR')">
                     <a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/patients' ? 'active':''}"
                        th:href="@{/patients}">Patients
                     </a>

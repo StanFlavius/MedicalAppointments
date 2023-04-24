@@ -2,10 +2,8 @@ package com.example.medicalappointments.service;
 
 import com.example.medicalappointments.exception.EntityNotFoundException;
 import com.example.medicalappointments.exception.NotUniqueException;
-import com.example.medicalappointments.model.Consult;
-import com.example.medicalappointments.model.Doctor;
-import com.example.medicalappointments.model.Patient;
-import com.example.medicalappointments.model.User;
+import com.example.medicalappointments.model.*;
+import com.example.medicalappointments.model.dto.SelectedMedication;
 import com.example.medicalappointments.repository.ConsultRepository;
 import com.example.medicalappointments.repository.PatientRepository;
 import com.example.medicalappointments.repository.RoleRepository;
@@ -15,9 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_PATIENT;
 import static com.example.medicalappointments.exception.NotUniqueException.ConflictingField.*;
 
@@ -28,6 +27,7 @@ public class PatientService {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final DoctorService doctorService;
     private final PasswordEncoder passwordEncoder;
     private final PatientRepository patientRepository;
     private final ConsultRepository consultRepository;
@@ -67,6 +67,15 @@ public class PatientService {
     }
 
     public List<Patient> getAllPatients() {
+        List<Role> rolesList = new ArrayList<>();
+        rolesList.add(userService.getCurrentUser().getRole());
+        Set<String> roles = rolesList.stream().map(Role::getName).collect(Collectors.toSet());
+        if (roles.contains(ROLE_DOCTOR)) {
+            Doctor doctor = doctorService.findByUserId(userService.getCurrentUser().getId());
+            List<Patient> patients = patientRepository.findPatientsForDoctor(doctor.getId());
+            return patients.stream().distinct()
+                    .collect(Collectors.toList());
+        }
         return patientRepository.findAll();
     }
 
