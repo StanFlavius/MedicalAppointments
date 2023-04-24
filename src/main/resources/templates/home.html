@@ -1,12 +1,93 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Navbar</title>
+    <title>Home</title>
     <link rel="stylesheet" href="/webjars/bootstrap/5.1.3/css/bootstrap.min.css"/>
     <script src="/webjars/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+    <style>
+        .banner {
+            background-color: #ffffff;
+            width: 100%;
+            padding: 2em 0;
+        }
+        .row {
+            align-items: center;
+        }
+        h1 {
+            color: #7145ed;
+            text-shadow: 1px 1px 2px #7c7c7c;
+        }
+        .btn {
+            padding: 0.5em 1.5em;
+            border-radius: 2em;
+            box-shadow: 5px 5px 5px rgba(105, 73, 73, 0.15);
+        }
+        @media screen and (max-width: 567px) {
+            .banner {
+                text-align: center;
+            }
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .profile-circel-image-200 img {
+            width: 200px;
+            height: 200px;
+            border-radius: 200px;
+        }
+        .vv img {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .vv img:hover {
+            opacity: 0.8;
+            box-shadow: 0px 0px 5px 8px rgba(0,0,0,0.08);
+        }
+    </style>
 </head>
-<body>
-    <div th:insert="navbar :: navbar"></div>
+<div th:insert="navbar :: navbar"></div>
+<div class="banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-5">
+                <h1 class="display-1 fw-bold">Express Consult</h1>
+                <p>With our Online Management Platform for Medical Appointments, you can create an account, find a doctor, schedule an appointment and see your medical history.</p>
+                <button onclick="window.location.href='#abc'" class="btn btn-success">Learn More</button>
+            </div>
+            <div class="col-sm-7">
+                <img class="img-fluid" src="https://cdn.dribbble.com/users/1097272/screenshots/7587408/media/1e155f6db34f5826bf49294277bd3a89.png?compress=1&resize=1600x1200&vertical=top" alt="">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="abc" class="container py-5">
+    <div class="row py-5">
+        <div class="col-12 text-center">
+            <h2 class="mb-2 h1 font-weight-bold">Scheduling a medical appointment has never been easier.</h2>
+            <p class="text-muted mb-5 pb-3">Clean interface, intuitive user experience</p>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 vv profile-circel-image-200">
+                    <img src="https://i.pinimg.com/originals/40/58/af/4058af39065a45768d25d75db9eb78e8.jpg">
+                    <h5 style="color: #7145ed" class="mb-3 mt-5">Schedule an appointment</h5>
+                    <p class="mb-4 text-muted">Schedule an appointment to one of our doctors. Your past and future appointments will show up in My Consults page.         </p>
+                </div>
+                <div class="col-lg-4 col-md-6 vv profile-circel-image-200">
+                    <img src="https://i.pinimg.com/originals/10/92/a5/1092a52014b3d90d34f9ac67f3fa7672.jpg" class="rounded img-fluid rounded-circle">
+                    <h5 style="color: #7145ed" class="mb-3 mt-5">Get a consultation from our doctors</h5>
+                    <p class="mb-4 text-muted">Show up on the day of your appointment. You will get a consultation from our doctors, which will prescribe medications based on your diagnosis.</p>
+                </div>
+                <div class="col-lg-4 col-md-6 vv profile-circel-image-200">
+                    <img src="https://media.istockphoto.com/id/1139096172/vector/medical-questionnaire-with-cross-symbol-flat-vector-illustration.jpg?s=612x612&w=0&k=20&c=hw4odfw8B7tKyuuvF-Wck749ipiKttcP3l_Wwc1fe5M=" class="rounded img-fluid rounded-circle">
+                    <h5 style="color: #7145ed" class="mb-3 mt-5">Find your results and medical history</h5>
+                    <p class="mb-4 text-muted">You can revisit your results and medical history any time, in My Consults page. You can also see our departments and doctors.                                            </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 </body>
 </html>
