@@ -41,6 +41,7 @@ public class ConsultController {
     private final PatientService patientService;
     private final UserService userService;
     private final MedicationService medicationService;
+    private final MedicalProcedureService medicalProcedureService;
 
     @GetMapping("/new")
     public String showConsultForm(@RequestParam(value = "department", required = false) Long departmentId,
@@ -58,6 +59,7 @@ public class ConsultController {
             doctor.setDepartment(new Department());
             consult.setDoctor(doctor);
             consult.setMedications(new ArrayList<>());
+            consult.setMedicalProcedure(new MedicalProcedure());
             selectedMedications = medicationService.getAllMedications().stream()
                     .map(med -> new SelectedMedication(med, false))
                     .collect(Collectors.toList());
@@ -84,6 +86,10 @@ public class ConsultController {
             return REDIRECT + ALL_CONSULTS + "/new";
         }
 
+        if (userService.isCurrentUserDoctor()) {
+            Doctor currentDoctor = userService.getDoctorForCurrentUser();
+            model.addAttribute("allProcedures", medicalProcedureService.getProceduresByDepartment(currentDoctor.getDepartment().getId()));
+        }
         model.addAttribute("allPatients", allPatients);
         model.addAttribute("allDepartments", allDepartments);
         model.addAttribute("allDoctors", allDoctors);
@@ -118,6 +124,10 @@ public class ConsultController {
             consult.setMedications(medicationService.findMedicationsByIdContains(containedMedicationIds));
         }
 
+        if (userService.isCurrentUserDoctor()) {
+            Doctor currentDoctor = userService.getDoctorForCurrentUser();
+            model.addAttribute("allProcedures", medicalProcedureService.getProceduresByDepartment(currentDoctor.getDepartment().getId()));
+        }
         model.addAttribute("selectedMedications", selectedMedications);
         model.addAttribute("allPatients", allPatients);
         model.addAttribute("allDepartments", allDepartments);

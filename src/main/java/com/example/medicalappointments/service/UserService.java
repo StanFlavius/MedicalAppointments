@@ -1,6 +1,8 @@
 package com.example.medicalappointments.service;
 
+import com.example.medicalappointments.exception.CustomException;
 import com.example.medicalappointments.exception.EntityNotFoundException;
+import com.example.medicalappointments.model.Doctor;
 import com.example.medicalappointments.model.User;
 import com.example.medicalappointments.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Collectors;
+
+import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
 
 @Service
 @RequiredArgsConstructor
@@ -74,6 +78,15 @@ public class UserService implements UserDetailsService {
         UserDetails principal = getCurrentUserPrincipal();
         return userRepository.getUserByUsername(principal.getUsername()).orElseThrow(() ->
                 EntityNotFoundException.builder().entityId(null).entityType("User").build());
+    }
+
+    public boolean isCurrentUserDoctor() {
+        return hasRole(ROLE_DOCTOR);
+    }
+
+    public Doctor getDoctorForCurrentUser() {
+        return userRepository.getDoctorForUsername(getCurrentUser().getUsername())
+                .orElseThrow(() -> new CustomException("Current user is not a doctor!"));
     }
 
     public boolean existsByEmail(String email) {

@@ -60,20 +60,26 @@
             <div class="row col-md-8">
                 <div class="col-md-6">
                     <label>Symptoms:</label>
-                    <p class="form-control" th:text="${consult.symptoms != null ? consult.symptoms : '-'}"></p>
+                    <p class="form-control" th:text="${!#strings.isEmpty(consult.symptoms) ? consult.symptoms : '-'}"></p>
                 </div>
 
                 <div class="col-md-6">
                     <label>Diagnose:</label>
-                    <p class="form-control" th:text="${consult.diagnose != null ? consult.diagnose : '-'}"></p>
+                    <p class="form-control" th:text="${!#strings.isEmpty(consult.diagnose) ? consult.diagnose : '-'}"></p>
                 </div>
             </div>
 
             <div class="row col-md-8">
                 <div class="col-md-12">
                     <label>Comments:</label>
-                    <p class="form-control" th:text="${consult.comment != null ? consult.comment : '-'}"></p>
+                    <p class="form-control" th:text="${!#strings.isEmpty(consult.comment) ? consult.comment : '-'}"></p>
                 </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="col-form-label">Procedure:</label>
+                <p class="form-control"
+                   th:text="${consult.medicalProcedure != null ? consult.medicalProcedure.name : '-'}"></p>
             </div>
 
             <div class="panel-heading mt-3">

@@ -34,7 +34,8 @@
         <div class="panel panel-primary mt-2">
 
             <div class="panel-heading" style="background-color:lightgray;">
-                <h1 class="panel-title" style="padding: 5px">Schedule/Edit a consult</h1>
+                <h1 th:if="${consult.id != null}" class="panel-title" style="padding: 5px">Edit a consult</h1>
+                <h1 th:unless="${consult.id != null}" class="panel-title" style="padding: 5px">Schedule a consult</h1>
             </div>
 
             <br>
@@ -57,14 +58,17 @@
 
                     <div class="col-md-4" sec:authorize="hasRole('PATIENT')">
                         <label class="col-form-label">Doctor:</label>
-                        <select th:disabled="*{doctor.department.id == null}" th:id="'doctor'" class="form-control" th:field="*{doctor.id}" />
-                            <option th:selected="*{doctor.id == null}" disabled th:id="'defaultDoc'" th:value="null"> -- Select a doctor -- </option>
-                            <option th:each="doctor : ${allDoctors}"
-                                    th:value="${doctor.id}"
-                                    th:utext="|${doctor.user.lastName} ${doctor.user.firstName}|"
-                                    th:id="'doc' + ${doctor.id}"
-                                    th:selected="${consult.doctor.id != null  && consult.doctor.id eq doctor.id}">
-                            </option>
+                        <select th:disabled="*{doctor.department.id == null}" th:id="'doctor'" class="form-control"
+                                th:field="*{doctor.id}"/>
+                        <option th:selected="*{doctor.id == null}" disabled th:id="'defaultDoc'" th:value="null"> --
+                            Select a doctor --
+                        </option>
+                        <option th:each="doctor : ${allDoctors}"
+                                th:value="${doctor.id}"
+                                th:utext="|${doctor.user.lastName} ${doctor.user.firstName}|"
+                                th:id="'doc' + ${doctor.id}"
+                                th:selected="${consult.doctor.id != null  && consult.doctor.id eq doctor.id}">
+                        </option>
                         </select>
                         <label th:if="${#fields.hasErrors('doctor')}" th:errors="*{doctor}" type="error"
                                class="error text-danger">
@@ -103,6 +107,21 @@
                         </label>
                         <label th:if="${error_date} != null" class="error text-danger"
                                th:text="${error_date}"></label>
+                    </div>
+
+                    <div class="col-md-4" sec:authorize="hasRole('DOCTOR')">
+                        <label class="col-form-label">Procedure:</label>
+                        <select th:id="'medicalProcedure'" class="form-control" th:field="*{medicalProcedure.id}">
+                            <option th:disabled="false" th:selected="*{medicalProcedure.id == null}" th:value="null">
+                                -- Select a procedure --
+                            </option>
+                            <option th:each="procedure : ${allProcedures}"
+                                    th:value="${procedure.id}"
+                                    th:utext="|${procedure.name}|"
+                                    th:id="'dep' + ${procedure.id}"
+                                    th:selected="${consult.medicalProcedure.id == procedure.id}">
+                            </option>
+                        </select>
                     </div>
                 </div>
 
