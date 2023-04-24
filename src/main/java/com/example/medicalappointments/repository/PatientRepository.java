@@ -12,9 +12,6 @@ import java.util.Optional;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
-    @Query(nativeQuery = true, value = "SELECT * FROM patient p, consult c where c.fk_doctor_id = :id AND c.fk_patient_id=p.patient_id")
-    List<Patient> findPatientsForDoctor(@Param("id") Long id);
-
     boolean existsByCnp(String cnp);
 
     Optional<Patient> findByUser_Id(Long userId);

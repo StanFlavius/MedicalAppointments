@@ -117,45 +117,18 @@ class PatientServiceTest {
         assertThrows(EntityNotFoundException.class, () -> patientService.findById(nonexistentDoctorId));
     }
 
-
     @Test
-    public void getAll_success() {
-        Role patientRole = createPatientRole();
-        Patient patient = createPersistedPatient(patientRole);
-
-        when(patientRepository.findAll()).thenReturn(List.of(patient));
-        when(userService.getCurrentUser()).thenReturn(User.builder().role(createAdminRole()).build());
-
-        List<Patient> resultedPatients = patientService.getAllPatients();
-
-        assertEquals(1, resultedPatients.size());
-        assertEquals(resultedPatients.get(0).getId(), patient.getId());
-        assertEquals(resultedPatients.get(0).getUser().getId(), patient.getUser().getId());
-        assertTrue(resultedPatients.get(0).getUser().getRole().equals(patientRole));
-
-        verify(patientRepository, times(1)).findAll();
-    }
-
-    @Test
-    public void getAllForDoctor_success() {
-        Patient patient = createPatient();
+    public void getAllPatients_success() {
         Patient persistedPatient = createPersistedPatient(createPatientRole());
-        Doctor persistedDoctor = createPersistedDoctor();
-        Consult persistedConsult = createPersistedConsult();
-        persistedConsult.setPatient(persistedPatient);
-        persistedConsult.setDoctor(persistedDoctor);
 
-        when(userService.getCurrentUser()).thenReturn(persistedDoctor.getUser());
-        when(doctorService.findByUserId(any())).thenReturn(persistedDoctor);
-
-        when(patientRepository.findPatientsForDoctor(1L)).thenReturn(List.of(patient));
+        when(patientRepository.findAll()).thenReturn(List.of(persistedPatient));
 
         List<Patient> resultedPatients = patientService.getAllPatients();
 
         assertEquals(1, resultedPatients.size());
-        assertEquals(resultedPatients.get(0).getId(), patient.getId());
-        assertEquals(resultedPatients.get(0).getUser().getId(), patient.getUser().getId());
-        verify(patientRepository, times(1)).findPatientsForDoctor(1L);
+        assertEquals(resultedPatients.get(0).getId(), persistedPatient.getId());
+        assertEquals(resultedPatients.get(0).getUser().getId(), persistedPatient.getUser().getId());
+        verify(patientRepository, times(1)).findAll();
     }
 
     @Test
@@ -297,6 +270,7 @@ class PatientServiceTest {
         doctorRole.setName(ROLE_DOCTOR);
         return doctorRole;
     }
+
     private Doctor createPersistedDoctor() {
         User user = new User();
         user.setUsername("test-username");
