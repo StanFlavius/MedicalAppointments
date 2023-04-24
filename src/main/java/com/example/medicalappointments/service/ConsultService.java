@@ -11,12 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
 import javax.transaction.Transactional;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.medicalappointments.configuration.SecurityConfiguration.ROLE_DOCTOR;
@@ -49,6 +45,9 @@ public class ConsultService {
         } else if (userService.hasRole(ROLE_PATIENT)) {
             Patient patient = patientService.findByUserId(userService.getCurrentUser().getId());
             consult.setPatient(patient);
+        }
+        if (consult.getMedicalProcedure() != null && consult.getMedicalProcedure().getId() == null) {
+            consult.setMedicalProcedure(null);
         }
 
         // It is important to persist the consult before sending the email,
